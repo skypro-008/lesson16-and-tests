@@ -47,7 +47,3 @@ def get_user(id):
         "is_pro": guide.is_pro,
         "company": guide.company,
     }
-
-
-if __name__ == "__main__":
-    pass
