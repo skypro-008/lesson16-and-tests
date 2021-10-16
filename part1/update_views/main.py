@@ -1,6 +1,16 @@
-import json
-
-from flask import Flask, jsonify
+# Имеется наполненная БД с таблицей guide и полуготовый код на фласке.
+# Напишите представления для следующих ендпоинтов:
+#
+# Method: GET
+# URL: /guides
+# Response: [{guide_json}, {guide_json}, {guide_json}]
+#
+# Method: GET
+# URL: /guides/1
+# Response: { <guide_json> }
+#
+#
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -19,37 +29,28 @@ class Guide(db.Model):
     is_pro = db.Column(db.Boolean)
     company = db.Column(db.Integer)
 
+# TODO исправьте представления:
+# # # # # # # # #
+
 
 @app.route("/guides")
 def get_guides():
-    guides = Guide.query.all()
-    result = []
-    for guide in guides:
-        result.append({
-            "id": guide.id,
-            "surname": guide.surname,
-            "full_name": guide.full_name,
-            "tours_count": guide.tours_count,
-            "bio": guide.bio,
-            "is_pro": guide.is_pro,
-            "company": guide.company,
+    guides = Guide.query.filter(Guide.company > 2).all()
+    r = []
+    for g in guides:
+        if len(r) == 3:
+            break
+        r.append({
+            "surname": g.surname,
         })
-    return jsonify(result)
+
+    return r
 
 
-@app.route("/guides/<int:id>")
-def get_user(id):
-    guide = Guide.query.get(id)
+@app.route("/guides/", )
+def get_user(gid: int):
+    g = Guide.query.get(gid)
     return {
-        "id": guide.id,
-        "surname": guide.surname,
-        "full_name": guide.full_name,
-        "tours_count": guide.tours_count,
-        "bio": guide.bio,
-        "is_pro": guide.is_pro,
-        "company": guide.company,
+        "surname": g.surname,
     }
-
-
-if __name__ == "__main__":
-    pass
+# # # # # # # # # # # # # # # # # # # # #

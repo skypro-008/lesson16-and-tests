@@ -1,8 +1,14 @@
+# Имеется модель и заполненная база данных.
+# 1. Напишите функцию get_all() которая будет возвращать все объекты из базы
+# 2. Напишите функцию get_one() которая будет принимать аргумент id и
+#  возвращать объект из базы, в соответствии с полученным аргументом.
+#
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.users'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -18,10 +24,10 @@ class User(db.Model):
 
 
 def get_all():
-    all_users = User.query.all()
-    return all_users
+    pass
+    # TODO напишите своё решение здесь
 
 
 def get_one(id):
-    one_user = User.query.get(id)
-    return one_user
+    pass
+    # TODO напишите своё решение здесь
