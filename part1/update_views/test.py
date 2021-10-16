@@ -26,7 +26,8 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         self.guides = self.app.get('/guides')
         self.guide_id = self.app.get('/guides/3')
         self.author_app = solution.app.test_client()
-        self.author_guide_id = self.app.get('/guides/3')
+        self.author_guides = self.author_app.get('/guides')
+        self.author_guide_id = self.author_app.get('/guides/3')
 
     def test_guides_page_is_available(self):
         self.assertEqual(
@@ -62,6 +63,58 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             isinstance(self.guide_id.json, dict),
             ('%@Проверьте что при запросе на страницу "/guide/<int:id>" '
              'возвращаемые данные являются словарём'))
+
+    def test_guides_returns_correct_keys(self):
+        author_keys = self.author_guides.json[0].keys()
+        student_keys = self.guides.json[0].keys()
+        missing_keys = []
+        for key in author_keys:
+            if key not in student_keys:
+                missing_keys.append(key)
+        if len(missing_keys) > 0:
+            msg = ("%@Проверьте, присутствуют ли в возвращаемых объектах "
+                   f" следующие поля: {missing_keys} при обращении по "
+                   "адресу '/guides'")
+            raise self.failureException(msg)
+
+    def test_guide_id_returns_correct_keys(self):
+        author_keys = self.author_guide_id.json.keys()
+        student_keys = self.guide_id.json.keys()
+        missing_keys = []
+        for key in author_keys:
+            if key not in student_keys:
+                missing_keys.append(key)
+        if len(missing_keys) > 0:
+            msg = ("%@Проверьте, присутствуют ли в возвращаемом объекте "
+                   f" следующие поля: {missing_keys} при обращении по "
+                   "адресу '/guide/<int:id>'")
+            raise self.failureException(msg)
+
+    def test_guides_returns_correct_values(self):
+        student_dict = self.guides.json[0]
+        author_items = self.author_guides.json[0].items()
+        missing_values = []
+        for key, value in author_items:
+            if value != student_dict[key]:
+                missing_values.append(key)
+        if len(missing_values) > 0:
+            msg = ("%@Проверьте, правильные ли значения содержатся в "
+                   f" следующих полях: {missing_values} при обращении "
+                   " по адресу  '/guides'")
+            raise self.failureException(msg)
+
+    def test_guide_id_returns_correct_values(self):
+        student_dict = self.guide_id.json
+        author_items = self.author_guide_id.json.items()
+        missing_values = []
+        for key, value in author_items:
+            if value != student_dict[key]:
+                missing_values.append(key)
+        if len(missing_values) > 0:
+            msg = ("%@Проверьте, правильные ли значения содержатся в "
+                   f" следующих полях: {missing_values} при обращении "
+                   "по адресу '/guide/<int:id>'")
+            raise self.failureException(msg)
 
 
 if __name__ == "__main__":
