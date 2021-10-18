@@ -8,7 +8,7 @@ db = SQLAlchemy(app)
 
 
 class Guide(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'guide'
     id = db.Column(db.Integer, primary_key=True)
     surname = db.Column(db.String)
     full_name = db.Column(db.String)
