@@ -25,7 +25,7 @@ class Guide(db.Model):
 
 
 def do_request():
-    result = db.session.query(Guide).filter(Guide.tours_count > 2).all()
+    result = db.session.query(Guide).filter(Guide.tours_count > 3).all()
     return result
 
 
