@@ -24,25 +24,16 @@ class Guide(db.Model):
     company = db.Column(db.Integer)
 
 
-def do_request():
-    result = db.session.query(Guide).filter(Guide.tours_count > 2).all()
-    return result
+def delete_guides():
+    Guide.query.filter(Guide.id.in_([1, 4, 7])).delete(False)
 
 
-# не удаляйте код ниже, он необходим
-# для выдачи результата запроса
-
-
-mytable = prettytable.PrettyTable()
-mytable.field_names = [
-    'id', 'surname', 'full_name',
-    'tours_count', 'bio', 'is_pro', 'company']
-
-rows = [[x.id, x.surname, x.full_name,
-         x.tours_count, x.bio, x.is_pro, x.company] for x in do_request()]
-mytable.add_rows(rows)
+delete_guides()
+session = db.session()
+cursor = session.execute("SELECT * FROM guide").cursor
+mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 
-if __name__ == "__main__":
-    print('Запрос возвращает следующие записи:')
+if __name__ == '__main__':
+    print('БАЗА ДАННЫХ:')
     print(mytable)

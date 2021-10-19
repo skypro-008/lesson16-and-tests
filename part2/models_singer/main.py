@@ -20,10 +20,7 @@ db = SQLAlchemy(app)
 
 class Singer(db.Model):
     __tablename__ = 'singer'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
-    age = db.Column(db.Integer, db.CheckConstraint("age < 35"))
-    group = db.Column(db.String, nullable=False)
+    # TODO напишите поля для модели Singer
 
 
 db.drop_all()
@@ -31,6 +28,7 @@ db.create_all()
 session = db.session()
 cursor = session.execute("SELECT * from singer").cursor
 mytable = prettytable.from_db_cursor(cursor)
+session.close()
 
 if __name__ == '__main__':
     print(mytable)

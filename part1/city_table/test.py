@@ -30,27 +30,19 @@ class CityTestCase(SkyproTestCase, DataBaseTestsMixin):
                           f'Вы выбрали {student_columns}, тогда '
                           f'как необходимо {author_columns}'))
 
-    def test_model_fields_has_correct_types(self):
-        model = main.City
-        self.assertTrue(
-            isinstance(model.id.type, sqlalchemy.Integer),
-            f"%@Проверьте имеет ли поле 'id' модели {MODEL_NAME} "
-            "тип Integer")
+    def test_model_city_integer_fields_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name='City',
+            type_name='Integer',
+            fields=('id', 'population'))
 
-        self.assertTrue(
-            isinstance(model.name.type, sqlalchemy.String),
-            f"%@Проверьте имеет ли поле 'name' модели {MODEL_NAME} "
-            "тип String")
-
-        self.assertTrue(
-            isinstance(model.country_ru.type, sqlalchemy.String),
-            f"%@Проверьте имеет ли поле 'author' модели {MODEL_NAME} "
-            "тип String")
-
-        self.assertTrue(
-            isinstance(model.population.type, sqlalchemy.Integer),
-            f"%@Проверьте имеет ли поле 'year' модели {MODEL_NAME} "
-            "тип Integer")
+    def test_model_city_string_fields_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name='City',
+            type_name='String',
+            fields=('name', 'country_ru'))
 
 
 if __name__ == "__main__":

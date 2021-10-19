@@ -1,12 +1,17 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
+from guides_sql import CREATE_TABLE, INSERT_VALUES
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.guides'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.url_map.strict_slashes = False
 app.config['JSON_AS_ASCII'] = False
+app.url_map.strict_slashes = False
 db = SQLAlchemy(app)
+with db.session.begin():
+    db.session.execute(text(CREATE_TABLE))
+    db.session.execute(text(INSERT_VALUES))
 
 
 class Guide(db.Model):

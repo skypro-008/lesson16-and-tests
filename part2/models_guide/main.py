@@ -13,30 +13,24 @@ db: SQLAlchemy = SQLAlchemy(app)
 
 class Guide(db.Model):
     __tablename__ = 'guide'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    main_speciality = db.Column(db.String)
-    country = db.Column(db.String)
+    # TODO добавьте поля модели здесь
 
 
 class Excursion(db.Model):
     __tablename__ = 'excursion'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    guide_id = db.Column(db.Integer, db.ForeignKey('guide.id'))
-    guide = db.relationship("Guide")
+    # TODO добавьте поля модели здесь
 
 # Не удаляйте код ниже, он нужен для корректного
 # отображения созданной вами модели
 
 
-db.drop_all()
 db.create_all()
 session = db.session()
-cursor = session.execute("SELECT * from author").cursor
-mytable = prettytable.from_db_cursor(cursor)
-cursor = session.execute("SELECT * from book").cursor
-mytable2 = prettytable.from_db_cursor(cursor)
+cursor_guide = session.execute("SELECT * from guide").cursor
+mytable = prettytable.from_db_cursor(cursor_guide)
+cursor_excursion = session.execute("SELECT * from excursion").cursor
+mytable2 = prettytable.from_db_cursor(cursor_excursion)
+
 
 if __name__ == '__main__':
     print(mytable)

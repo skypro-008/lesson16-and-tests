@@ -1,16 +1,9 @@
-# Напишите модель певец (Singer) с именем таблицы "singer"
-# Для данной модели заданы следующие ограничения:
-#
-#
-# #Таблица singer, описание колонок:
-# Идентификатор - первичный ключ (PK) - id
-# Имя - должно быть уникальным - name
-# Возраст - не больше 35 лет - age
-# Группа - не может быть Null (None) - group
+# Напишите функцию do_request, которая
+# вернет из таблицы 'guide' список записей гидов,
+# у которых число туров превышает 3 (tours_count > 3)
 #
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, Boolean
 import prettytable
 from sqlalchemy import text
 from guides_sql import CREATE_TABLE, INSERT_VALUES
@@ -36,9 +29,8 @@ class Guide(db.Model):
 
 
 def do_request():
-    result = db.session.query(Guide).filter(Guide.tours_count > 1).all()
-    return result
-
+    # TODO напишите запрос здесь
+    pass
 
 # не удаляйте код ниже, он необходим
 # для выдачи результата запроса
@@ -55,4 +47,5 @@ mytable.add_rows(rows)
 mytable.max_width = 25
 
 if __name__ == "__main__":
+    print('Запрос возвращает следующие записи:')
     print(mytable)

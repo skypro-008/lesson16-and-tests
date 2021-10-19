@@ -1,3 +1,7 @@
+# Напишите функцию do_request, которая
+# вернет из таблицы 'guide' список записей гидов,
+# у которых нет компании (company=None)
+#
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import prettytable
@@ -25,8 +29,8 @@ class Guide(db.Model):
 
 
 def do_request():
-    result = db.session.query(Guide).filter(Guide.tours_count > 2).all()
-    return result
+    # TODO напишите запрос здесь
+    pass
 
 
 # не удаляйте код ниже, он необходим
@@ -41,7 +45,7 @@ mytable.field_names = [
 rows = [[x.id, x.surname, x.full_name,
          x.tours_count, x.bio, x.is_pro, x.company] for x in do_request()]
 mytable.add_rows(rows)
-mytable.max_width = 30
+mytable.max_width = 25
 
 if __name__ == "__main__":
     print('Запрос возвращает следующие записи:')

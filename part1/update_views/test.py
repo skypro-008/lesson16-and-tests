@@ -2,7 +2,6 @@ import sys
 import unittest
 from pathlib import Path
 
-
 import main
 import solution
 
@@ -41,13 +40,15 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         self.assertTrue(
             self.guides.is_json,
             ("%@Проверьте что при запросе на страницу '/guides'"
-             " данные возвращаются в формате json"))
+             " данные возвращаются в формате json, попробуйте "
+             " использовать функцию jsonify"))
 
     def test_guide_id_page_returns_json(self):
         self.assertTrue(
             self.guides.is_json,
             ("%@Проверьте что при запросе на страницу '/guides/<int:id>'"
-             " данные возвращаются в формате json"))
+             " данные возвращаются в формате json, попробуйте "
+             "использовать функцию jsonify"))
 
     def test_guides_page_result_is_dict(self):
 

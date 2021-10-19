@@ -17,7 +17,6 @@ class User(db.Model):
     city_ru = db.Column(db.Text(200))
 
 
-db.drop_all()
 db.create_all()
 Ludmila = User(
     id=1,

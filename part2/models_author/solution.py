@@ -27,11 +27,10 @@ class Book(db.Model):
 # отображения созданной вами модели
 
 
-db.drop_all()
 db.create_all()
 session = db.session()
-cursor_autor = session.execute("SELECT * from author").cursor
-mytable = prettytable.from_db_cursor(cursor_autor)
+cursor_author = session.execute("SELECT * from author").cursor
+mytable = prettytable.from_db_cursor(cursor_author)
 cursor_book = session.execute("SELECT * from book").cursor
 mytable2 = prettytable.from_db_cursor(cursor_book)
 

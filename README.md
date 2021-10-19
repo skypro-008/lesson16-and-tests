@@ -48,7 +48,14 @@ Pycharm может предложить вам сделать это после 
 - part1/update_views
 
 #### Часть 2:
-- 
+- part2/models_author
+- part2/models_guide
+- part2/models_singer
+- part2/tours_count
+- part2/company_none - проверить в первую очередь
+- part2/update_tours_count
+- delete_rows
+- routes
 
 Задачи описаны в комментариях в файле main.py
 В текущих заданиях вы будете работать с Flask.

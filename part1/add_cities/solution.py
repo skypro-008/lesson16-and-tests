@@ -16,7 +16,6 @@ class City(db.Model):
     population = db.Column(db.Integer)
 
 
-db.drop_all()
 db.create_all()
 
 Rome = City(

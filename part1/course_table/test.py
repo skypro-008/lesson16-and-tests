@@ -52,32 +52,26 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
                           f'Вы выбрали {student_columns}, тогда '
                           f'как необходимо {author_columns}'))
 
-    def test_model_fields_has_correct_types(self):
-        model = main.Course
-        self.assertTrue(
-            isinstance(model.id.type, sqlalchemy.Integer),
-            f"%@Проверьте имеет ли поле 'id' модели {MODEL_NAME} "
-            "тип Integer")
+    def test_model_course_text_fields_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name=MODEL_NAME,
+            type_name='Text',
+            fields=('title', 'subject'))
 
-        self.assertTrue(
-            isinstance(model.title.type, sqlalchemy.Text),
-            f"%@Проверьте имеет ли поле 'title' модели {MODEL_NAME} "
-            "тип Text")
+    def test_model_course_integer_fields_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name=MODEL_NAME,
+            type_name='Integer',
+            fields=('id', 'price'))
 
-        self.assertTrue(
-            isinstance(model.subject.type, sqlalchemy.Text),
-            f"%@Проверьте имеет ли поле 'subject' модели {MODEL_NAME} "
-            "тип Text")
-
-        self.assertTrue(
-            isinstance(model.price.type, sqlalchemy.Integer),
-            f"%@Проверьте имеет ли поле 'price' модели {MODEL_NAME} "
-            "тип Integer")
-
-        self.assertTrue(
-            isinstance(model.weeks.type, sqlalchemy.Float),
-            f"%@Проверьте имеет ли поле 'weeks' модели {MODEL_NAME} "
-            "тип Float")
+    def test_model_course_text_fields_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name=MODEL_NAME,
+            type_name='Float',
+            fields=('weeks', ))
 
 
 if __name__ == "__main__":

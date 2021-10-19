@@ -33,7 +33,6 @@ class City(db.Model):
     population = db.Column(db.Integer)
 
 
-db.drop_all()
 db.create_all()
 
 # TODO напишите здесь код с запросом на добавление

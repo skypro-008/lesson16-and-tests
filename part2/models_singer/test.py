@@ -16,41 +16,60 @@ sys.path.append(str(basepath))
 from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
 from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 
-MODEL_NAME = 'City'
 
+class SingerTestCase(SkyproTestCase, DataBaseTestsMixin):
 
-class CityTestCase(SkyproTestCase, DataBaseTestsMixin):
+    def test_model_singer_columns_is_correct(self):
+        student_columns = self.get_cursor_info(
+            main.cursor).get('columns')
+        author_columns = self.get_cursor_info(
+            solution.cursor).get('columns')
+        self.field_name_checker(student_columns, author_columns)
 
-    def test_model_columns_is_correct(self):
-        student_columns = self.get_cursor_info(main.cursor).get('columns')
-        author_columns = self.get_cursor_info(solution.cursor).get('columns')
-        self.assertEqual(student_columns, author_columns,
-                         (r'%@Проверьте, что правильно определили '
-                          'поля модели. '
-                          f'Вы выбрали {student_columns}, тогда '
-                          f'как необходимо {author_columns}'))
+    def test_model_singer_id_field_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name='Singer',
+            type_name='Integer',
+            fields=('id', 'age', ))
 
-    def test_model_fields_has_correct_types(self):
-        model = main.City
-        self.assertTrue(
-            isinstance(model.id.type, sqlalchemy.Integer),
-            f"%@Проверьте имеет ли поле 'id' модели {MODEL_NAME} "
-            "тип Integer")
+    def test_model_singer_string_fields_has_correct_types(self):
+        self.field_type_checker(
+            module=main,
+            model_name='Singer',
+            type_name='String',
+            fields=('name', 'group', ))
 
-        self.assertTrue(
-            isinstance(model.name.type, sqlalchemy.String),
-            f"%@Проверьте имеет ли поле 'name' модели {MODEL_NAME} "
-            "тип String")
+    def test_models_singer_has_correct_age_constraint(self):
+        with self.assertRaises(
+            sqlalchemy.exc.IntegrityError,
+            msg=("%@Проверьте, что полю 'age' нельзя присвоить"
+                 " значение больше 34")):
+            model = main.Singer(name='Виктор', age=35, group='qwe')
+            main.db.session.add(model)
+            main.db.session.commit()
 
-        self.assertTrue(
-            isinstance(model.country_ru.type, sqlalchemy.String),
-            f"%@Проверьте имеет ли поле 'author' модели {MODEL_NAME} "
-            "тип String")
+    def test_models_singer_has_correct_group_constraint(self):
+        with self.assertRaises(
+            sqlalchemy.exc.IntegrityError,
+            msg=("%@Проверьте, что полю 'group' нельзя присвоить"
+                 " Null значение (None)")):
+            model = main.Singer(name='Виктор', age=34, group=None)
+            main.db.session.add(model)
+            main.db.session.commit()
 
-        self.assertTrue(
-            isinstance(model.population.type, sqlalchemy.Integer),
-            f"%@Проверьте имеет ли поле 'year' модели {MODEL_NAME} "
-            "тип Integer")
+    def test_models_singer_has_correct_name_constraint(self):
+        with self.assertRaises(
+                sqlalchemy.exc.IntegrityError,
+                msg=("%@Проверьте, что поле 'name' является уникальным")):
+            model = main.Singer(name='Виктор', age=34, group='qwe')
+            model2 = main.Singer(name='Виктор', age=33, group='qwe1')
+            models = (model, model2)
+            main.db.session.add_all(models)
+            main.db.session.commit()
+
+    def tearDown(self):
+        main.db.session.close()
 
 
 if __name__ == "__main__":

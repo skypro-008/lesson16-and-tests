@@ -27,13 +27,12 @@ class Excursion(db.Model):
 # отображения созданной вами модели
 
 
-db.drop_all()
 db.create_all()
 session = db.session()
-cursor = session.execute("SELECT * from guide").cursor
-mytable = prettytable.from_db_cursor(cursor)
-cursor = session.execute("SELECT * from excursion").cursor
-mytable2 = prettytable.from_db_cursor(cursor)
+cursor_guide = session.execute("SELECT * from guide").cursor
+mytable = prettytable.from_db_cursor(cursor_guide)
+cursor_excursion = session.execute("SELECT * from excursion").cursor
+mytable2 = prettytable.from_db_cursor(cursor_excursion)
 
 if __name__ == '__main__':
     print(mytable)

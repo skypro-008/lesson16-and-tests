@@ -1,5 +1,5 @@
 import sqlite3
-
+import sqlalchemy
 
 class DataBaseTestsMixin:
     """
@@ -92,3 +92,27 @@ class DataBaseTestsMixin:
             if keyword in query:
                 lst.append(keyword)
         return lst
+
+    def field_name_checker(self, student_columns, author_columns):
+        self.assertEqual(student_columns, author_columns,
+                 (r'%@Проверьте, что правильно определили '
+                  'поля модели Author. '
+                  f'Вы выбрали {student_columns}, тогда '
+                  f'как необходимо {author_columns}'))
+
+    def field_type_checker(
+            self,
+            module = None,
+            model_name: str =None, 
+            type_name: str = None,
+            fields = None):  # field.name (field.name, field.name)
+            correct_field_type = getattr(sqlalchemy, type_name)
+            model = getattr(module, model_name)
+            fields = (getattr(model, field_name) for field_name in fields)
+            for field in fields:
+                name = field.property.key
+                self.assertTrue(
+                    isinstance(field.type, correct_field_type),
+                    f"%@Проверьте имеет ли поле {name} модели {model_name} "
+                    f"тип {type_name}")
+

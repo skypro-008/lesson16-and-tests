@@ -1,0 +1,121 @@
+import sys
+import unittest
+from pathlib import Path
+from guides_sql import CREATE_TABLE, INSERT_VALUES
+from sqlalchemy import text
+from flask_sqlalchemy import SQLAlchemy
+import json
+import main
+import solution
+
+BASENAME = 'lesson16-and-tests'
+cwd = Path.cwd()
+parts = cwd.parts
+basefolder_index = parts.index(BASENAME)
+basepath = Path(*parts[:basefolder_index + 1])
+sys.path.append(str(basepath))
+
+from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
+from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
+
+
+class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.one_field_update = {
+            "surname": "Федоров"
+        }
+        cls.three_fields_update = {
+            "surname": "Федоров",
+            "full_name": "Петр Федоров",
+            "tours_count": 500,
+        }
+
+    def setUp(self):
+        self.app = main.app.test_client()
+        self.db = main.db
+        self.db.drop_all()
+        with self.db.session.begin():
+            self.db.session.execute(text(CREATE_TABLE))
+            self.db.session.execute(text(INSERT_VALUES))
+        self.author_app = solution.app.test_client()
+        self.author_db = solution.db
+        self.author_db.drop_all()
+        with self.db.session.begin():
+            self.author_db.session.execute(text(CREATE_TABLE))
+            self.author_db.session.execute(text(INSERT_VALUES))
+
+    def test_get_method_is_available_and_works_correct(self):
+        url = '/guides'
+        response = self.app.get(url)
+        self.assertEqual(
+            response.status_code, 200,
+            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
+             "код 200"))
+        data = json.loads(response.data)
+        self.assertTrue(
+            isinstance(data, list),
+            f"%@Проверьте что в ответ на GET-запрос по адресу {url}"
+            "возвращается список"
+        )
+        self.assertEqual(
+            len(data), 10,
+            f"%@Проверьте, что в ответ на GET-запрос по адресу {url} "
+            "возвращаются все объекты"
+        )
+        author_response = self.author_app.get(url)
+        author_data = json.loads(author_response.data)[0]
+        student_items = data[0].items()
+        for key, value in student_items:
+            self.assertIn(
+                key,
+                author_data.keys(),
+                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
+                f"содержит поле {key}")
+            self.assertEqual(
+                value,
+                author_data[key],
+                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
+                f"содержит поле {key}")
+
+    def test_get_id_method_is_available_and_works_correct(self):
+        pass
+
+    def test_put_method_is_available_and_works_correct(self):
+        url = '/guides/1'
+        response = self.app.put(url, data=json.dumps(self.one_field_update))
+        self.assertIn(
+            response.status_code, [200, 204],
+            ("%@Проверьте, что PUT-запрос с одним полем на адрес"
+             f" {url} возвращает код 200 или 204"))
+
+        url = '/guides/1'
+        self.app.put(url, data=json.dumps(self.three_fields_update))
+        self.assertIn(
+            response.status_code, [200, 204],
+            ("%@Проверьте, что PUT-запрос с несколькими полями на адрес"
+             f" {url} возвращает код 200 или 204"))
+
+    def test_delete_method_is_available_and_works_correct(self):
+        url = '/guides/1'
+        response = self.app.post(url)
+        self.assertEqual(
+            response.status_code, 204,
+            (f"%@Проверьте, что POST-запрос на адрес"
+             f" {url} возвращает код 200 или 204"))
+        result = self.db.session.execute(
+            text('select * from guide where id=1')).fetchall()
+        self.assertTrue(
+            result == [],
+            f"%@Проверьте что POST-запрос на адрес {url} "
+            " удаляет запись из базы данных"
+        )
+
+    def tearDown(self):
+        self.db.session.close()
+        self.author_db.session.close()
+
+
+if __name__ == "__main__":
+    unittest.main()

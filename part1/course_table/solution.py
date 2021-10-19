@@ -17,7 +17,6 @@ class Course(db.Model):
     weeks = db.Column(db.Float)
 
 
-db.drop_all()
 db.create_all()
 session = db.session()
 cursor = session.execute(f"SELECT * from {Course.__tablename__}").cursor

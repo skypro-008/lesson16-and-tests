@@ -5,7 +5,9 @@ ignore =
 exclude =
     ./ttools/*
     env/,
-    venv/
+    venv/,
+    */guides_sql.py,
+    */users_sql.py
 per-file-ignores =
     */settings.py:E501
 max-complexity = 10

@@ -14,8 +14,10 @@ sys.path.append(str(basepath))
 from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
 from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 
+MODEL_NAME = 'City'
 
-class ToursCountTestCase(SkyproTestCase, DataBaseTestsMixin):
+
+class ToursCompanyNoneTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def test_function_returns_list(self):
         self.assertTrue(isinstance(main.do_request(), list),
@@ -34,10 +36,10 @@ class ToursCountTestCase(SkyproTestCase, DataBaseTestsMixin):
     def test_function_retuns_correct_value(self):
         value_list = main.do_request()
         for instance in value_list:
-            self.assertGreater(
-                instance.tours_count, 3,
+            self.assertEqual(
+                instance.company, None,
                 "%@Проверьте, что в результате запроса содержатся"
-                " только те записи, в которых число туров превышает 3")
+                " только те записи, в которых значение поля company=None")
 
 
 if __name__ == "__main__":

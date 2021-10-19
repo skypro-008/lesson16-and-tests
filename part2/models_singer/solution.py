@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 class Singer(db.Model):
     __tablename__ = 'singer'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
+    name = db.Column(db.String)
     age = db.Column(db.Integer, db.CheckConstraint("age < 35"))
     group = db.Column(db.String, nullable=False)
 
