@@ -1,6 +1,5 @@
-# Напишите функцию update_tours_count, которая
-# обновит значение поля tours_count до 6 у гида
-# c id = 1
+# Напишите функцию delete_guides, которая
+# удаляет из базы гидов c id = 1,4,7
 #
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
