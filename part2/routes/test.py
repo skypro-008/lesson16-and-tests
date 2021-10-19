@@ -79,8 +79,6 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
                 f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
                 f"содержит поле {key}")
 
-# GET ID
-
     def test_get_id_method_is_available_and_works_correct(self):
         url = '/guides/1'
         response = self.app.get(url)
