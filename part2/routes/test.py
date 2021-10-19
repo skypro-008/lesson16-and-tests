@@ -27,8 +27,8 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             "surname": "Федоров"
         }
         cls.three_fields_update = {
-            "surname": "Федоров",
-            "full_name": "Петр Федоров",
+            "surname": "Петров",
+            "full_name": "Петр Петров",
             "tours_count": 500,
         }
 
@@ -79,8 +79,35 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
                 f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
                 f"содержит поле {key}")
 
+# GET ID
+
     def test_get_id_method_is_available_and_works_correct(self):
-        pass
+        url = '/guides/1'
+        response = self.app.get(url)
+        self.assertEqual(
+            response.status_code, 200,
+            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
+             "код 200"))
+        data = json.loads(response.data)
+        self.assertTrue(
+            isinstance(data, dict),
+            f"%@Проверьте что в ответ на GET-запрос по адресу {url}"
+            "возвращается словарь"
+        )
+        author_response = self.author_app.get(url)
+        author_data = json.loads(author_response.data)
+        student_items = data.items()
+        for key, value in student_items:
+            self.assertIn(
+                key,
+                author_data.keys(),
+                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
+                f"содержит поле {key}")
+            self.assertEqual(
+                value,
+                author_data[key],
+                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
+                f"содержит поле {key}")
 
     def test_put_method_is_available_and_works_correct(self):
         url = '/guides/1'
@@ -89,9 +116,22 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.status_code, [200, 204],
             ("%@Проверьте, что PUT-запрос с одним полем на адрес"
              f" {url} возвращает код 200 или 204"))
-
-        url = '/guides/1'
+        result = self.db.session.execute(
+            text('select `surname` from guide where id=1')).fetchall()
+        self.one_field_update.get('surname')
+        self.assertEqual(
+            result[0][0], self.one_field_update.get('surname'),
+            ("%@Проверьте, что при выполнении PUT-запроса с изменением одного "
+             " поля происходят соответствующие изменения в БД"))
         self.app.put(url, data=json.dumps(self.three_fields_update))
+        result = self.db.session.execute(
+            text('select `surname`, `full_name`, `tours_count` from guide where id=1')).fetchall()
+        for value in self.three_fields_update.values():
+            self.assertIn(
+                value, result[0],
+                ("%@Проверьте, что при выполнении PUT-запроса с"
+                 " изменением нескольких полей происходят"
+                 " соответствующие изменения в БД"))
         self.assertIn(
             response.status_code, [200, 204],
             ("%@Проверьте, что PUT-запрос с несколькими полями на адрес"
