@@ -16,8 +16,6 @@ sys.path.append(str(basepath))
 from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
 from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 
-MODEL_NAME = 'Course'
-
 
 class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
 
@@ -37,7 +35,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
     def test_guide_id_page_is_available(self):
         self.assertEqual(
             self.guide_id.status_code, 200,
-            "%@Проверьте, что адрес '/guide/<int:id>' доступен")
+            "%@Проверьте, что адрес '/guides/<int:id>' доступен")
 
     def test_guides_page_returns_json(self):
         self.assertTrue(
@@ -48,20 +46,20 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
     def test_guide_id_page_returns_json(self):
         self.assertTrue(
             self.guides.is_json,
-            ("%@Проверьте что при запросе на страницу '/guide/<int:id>'"
+            ("%@Проверьте что при запросе на страницу '/guides/<int:id>'"
              " данные возвращаются в формате json"))
 
     def test_guides_page_result_is_dict(self):
 
         self.assertTrue(
             isinstance(self.guides.json, list),
-            ('%@Проверьте что при запросе на страницу "/guide" '
+            ('%@Проверьте что при запросе на страницу "/guides" '
              'возвращаемые данные являются словарем'))
 
     def test_guide_id_page_result_is_dict(self):
         self.assertTrue(
             isinstance(self.guide_id.json, dict),
-            ('%@Проверьте что при запросе на страницу "/guide/<int:id>" '
+            ('%@Проверьте что при запросе на страницу "/guides/<int:id>" '
              'возвращаемые данные являются словарём'))
 
     def test_guides_returns_correct_keys(self):
@@ -87,7 +85,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         if len(missing_keys) > 0:
             msg = ("%@Проверьте, присутствуют ли в возвращаемом объекте "
                    f" следующие поля: {missing_keys} при обращении по "
-                   "адресу '/guide/<int:id>'")
+                   "адресу '/guides/<int:id>'")
             raise self.failureException(msg)
 
     def test_guides_returns_correct_values(self):
@@ -113,7 +111,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         if len(missing_values) > 0:
             msg = ("%@Проверьте, правильные ли значения содержатся в "
                    f" следующих полях: {missing_values} при обращении "
-                   "по адресу '/guide/<int:id>'")
+                   "по адресу '/guides/<int:id>'")
             raise self.failureException(msg)
 
 

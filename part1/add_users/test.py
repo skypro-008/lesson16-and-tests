@@ -45,45 +45,20 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
              f"В вашей таблице {student_rows_count} строк, "
              f"тогда как должно быть {author_rows_count} строк"))
 
-    def test_ludmila_record_is_correct(self):
-        user = 'Людмила Новикова'
-        query = f"SELECT * FROM {TABLE_NAME} WHERE name='{user}'"
-        self.assertEqual(
-            self.student_session.execute(query).fetchall(),
-            self.author_session.execute(query).fetchall(),
-            f"%@Проверьте, что правильно внесли сведения про {user}")
-
-    def test_andrew_record_is_correct(self):
-        user = 'Андрей Васечкин'
-        query = f"SELECT * FROM {TABLE_NAME} WHERE name='{user}'"
-        self.assertEqual(
-            self.student_session.execute(query).fetchall(),
-            self.author_session.execute(query).fetchall(),
-            f"%@Проверьте, что правильно внесли сведения про {user}")
-
-    def test_venice_record_is_correct(self):
-        user = 'Георги Беридзе'
-        query = f"SELECT * FROM {TABLE_NAME} WHERE name='{user}'"
-        self.assertEqual(
-            self.student_session.execute(query).fetchall(),
-            self.author_session.execute(query).fetchall(),
-            f"%@Проверьте, что правильно внесли сведения про {user}")
-
-    def test_istanbul_record_is_correct(self):
-        user = 'Оксана Ласкина'
-        query = f"SELECT * FROM {TABLE_NAME} WHERE name='{user}'"
-        self.assertEqual(
-            self.student_session.execute(query).fetchall(),
-            self.author_session.execute(query).fetchall(),
-            f"%@Проверьте, что правильно внесли сведения про {user}")
-
-    def test_kemer_record_is_correct(self):
-        user = 'Иван Горячий'
-        query = f"SELECT * FROM {TABLE_NAME} WHERE name='{user}'"
-        self.assertEqual(
-            self.student_session.execute(query).fetchall(),
-            self.author_session.execute(query).fetchall(),
-            f"%@Проверьте, что правильно внесли сведения про {user}")
+    def test_records_is_correct(self):
+        users = [
+            'Людмила Новикова',
+            'Андрей Васечкин',
+            'Георги Беридзе',
+            'Оксана Ласкина',
+            'Иван Горячий'
+        ]
+        for user in users:
+            query = f"SELECT * FROM {TABLE_NAME} WHERE full_name='{user}'"
+            self.assertEqual(
+                self.student_session.execute(query).fetchall(),
+                self.author_session.execute(query).fetchall(),
+                f"%@Проверьте, что правильно внесли сведения про {user}")
 
 
 if __name__ == "__main__":

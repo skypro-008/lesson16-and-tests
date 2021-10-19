@@ -16,12 +16,12 @@ sys.path.append(str(basepath))
 from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
 from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 
-MODEL_NAME = 'City'
+MODEL_NAME = 'Author'
 
 
 class CityTestCase(SkyproTestCase, DataBaseTestsMixin):
 
-    def test_model_columns_is_correct(self):
+    def test_model_author_columns_is_correct(self):
         student_columns = self.get_cursor_info(main.cursor).get('columns')
         author_columns = self.get_cursor_info(solution.cursor).get('columns')
         self.assertEqual(student_columns, author_columns,

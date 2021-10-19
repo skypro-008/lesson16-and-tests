@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.guides'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.url_map.strict_slashes = False
+app.config['JSON_AS_ASCII'] = False
 db = SQLAlchemy(app)
 
 
@@ -35,10 +37,10 @@ def get_guides():
     return jsonify(result)
 
 
-@app.route("/guides/<int:id>")
-def get_user(id):
-    guide = Guide.query.get(id)
-    return {
+@app.route("/guides/<int:gid>")
+def get_user(gid):
+    guide = Guide.query.get(gid)
+    guides = {
         "id": guide.id,
         "surname": guide.surname,
         "full_name": guide.full_name,
@@ -47,3 +49,8 @@ def get_user(id):
         "is_pro": guide.is_pro,
         "company": guide.company,
     }
+    return jsonify(guides)
+
+
+if __name__ == "__main__":
+    app.run()

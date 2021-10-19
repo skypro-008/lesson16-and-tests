@@ -16,6 +16,8 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.guides'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JSON_AS_ASCII'] = False
+app.url_map.strict_slashes = False
 db = SQLAlchemy(app)
 
 
@@ -35,22 +37,21 @@ class Guide(db.Model):
 
 @app.route("/guides")
 def get_guides():
-    guides = Guide.query.filter(Guide.company > 2).all()
-    r = []
-    for g in guides:
-        if len(r) == 3:
-            break
-        r.append({
-            "surname": g.surname,
-        })
-
-    return r
+    # TODO допишите представления
+    pass
 
 
-@app.route("/guides/", )
-def get_user(gid: int):
-    g = Guide.query.get(gid)
-    return {
-        "surname": g.surname,
-    }
-# # # # # # # # # # # # # # # # # # # # #
+@app.route("/guides/<int:gid>")
+def get_guide(gid):
+    # TODO допишите представления
+    pass
+
+# чтобы увидеть результат работы функций
+# запустите фаил и
+# перейдите по адресу:
+# 127.0.0.1:5000/guides
+# 127.0.0.1:5000/guides/1
+
+
+if __name__ == "__main__":
+    app.run()

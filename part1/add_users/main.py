@@ -35,7 +35,6 @@ class User(db.Model):
     city_ru = db.Column(db.Text(200))
 
 
-db.drop_all()
 db.create_all()
 
 # TODO напишите здесь код с запросом на добавление
