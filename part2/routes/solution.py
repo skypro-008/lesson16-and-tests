@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from guides_sql import CREATE_TABLE, INSERT_VALUES
-import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
@@ -77,7 +76,7 @@ def delete_guide(gid):
 
 @app.route("/guides", methods=['POST'])
 def create_guide():
-    data = json.loads(request.data)
+    data = request.json
     guide = Guide(
         surname=data.get('surname'),
         full_name=data.get('full_name'),

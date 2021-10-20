@@ -1,7 +1,6 @@
 import sqlite3
 import sqlalchemy
 import unittest
-import json
 
 class DataBaseTestsMixin:
     """
@@ -134,26 +133,36 @@ class ResponseTestsMixin:
         - is_json type
         - expected_obj (if arg expected is not None)
         """
-        code: str = kwargs.get('code'),
-        url: str = kwargs.get('url'),
+        code: list = kwargs.get('code')
+        url: str = kwargs.get('url')
         response = kwargs.get('response')
         expected: object = kwargs.get('expected')
         method: str = kwargs.get('method')
-        self._required_args_checker('code', 'url', 'response', **kwargs)
+        self._required_args_checker('url', 'response', **kwargs)
         code = kwargs.get('code')
         url = kwargs.get('url')
         response = kwargs.get('response')
-        self.assertEqual(
-            response.status_code, code,
-            (f"%@Проверьте, адрес {url} доступен, а {method}-запрос "
-            f"возвращает код {code}"))
+        if code:
+            self.assertIn(
+                response.status_code, code,
+                (f"%@Проверьте, что адрес {url} доступен, а {method}-запрос "
+                f"возвращает код {code}"))
+        else:
+            self.assertNotIn(
+                response.status_code, [404, 500],
+                (f"%@Кажется, на сервере произошла ошибка."
+                 f"Проверьте, что адрес {url} доступен."))
+            self.assertNotIn(
+                response.status_code, [405],
+                (f"%@Проверьте, что при {method}-запросе на адрес "
+                f"{url} используется правильный http-метод"))
         self.assertTrue(
             response.is_json,
-            (f"%@Проверьте {method} при запросе на адрес {url}"
-             " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки flask"))
+            (f"%@Проверьте, что в ответ на {method}-запрос "
+             f"по адресу {url} возращает данные в формате json."
+             " Попробуйте использовать функцию jsonify из библиотеки flask."))
         if expected:
-            data = json.loads(response.data)
+            data = response.json
             self.assertTrue(
                 isinstance(data, expected),
                 f"%@Проверьте что в ответ на {method}-запрос по адресу {url}"
@@ -161,9 +170,9 @@ class ResponseTestsMixin:
             )
         else:
             self.assertEqual(
-                response.data, b'',
+                response.json, '',
                 f"%@Проверьте что в ответ на {method}-запрос по адресу {url}"
-                f"возвращается пустое значение"
+                f" возвращается пустое значение."
             )
     
     def compare_result_fields_with_author_solution(
@@ -183,8 +192,8 @@ class ResponseTestsMixin:
             **kwargs)
         method = kwargs.get('method')
         url = kwargs.get('url')
-        student_response = json.loads(kwargs.get('student_response').data)
-        author_response = json.loads(kwargs.get('author_response').data)
+        student_response = kwargs.get('student_response').json
+        author_response = kwargs.get('author_response').json
         if not many and isinstance(author_response, list):
             raise ValueError('check `response.data` maybe many arg must have True value')
         if many:

@@ -3,7 +3,6 @@ import unittest
 from pathlib import Path
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 from sqlalchemy import text
-import json
 import main
 import solution
 
@@ -23,10 +22,10 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
     @classmethod
     def setUpClass(cls):
         cls.instance_to_create = {
-            "surname": 'Иванов',
-            "full_name": 'Иван Иванов',
+            "surname": "Иванов",
+            "full_name": "Иван Иванов",
             "tours_count": 7,
-            "bio": 'Провожу экскурсии по крышам СПб',
+            "bio": "Провожу экскурсии по крышам СПб",
             "is_pro": True,
             "company": "Удивительные экскурсии"
         }
@@ -53,12 +52,11 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
 
         self.check_status_code_jsonify_and_expected(
             url=url,
-            code=200,
             response=response,
             method=method,
             expected=list)
 
-        data = json.loads(response.data)
+        data = response.json
         self.assertEqual(
             len(data), 10,
             f"%@Проверьте, что в ответ на {method}-запрос по адресу {url} "
@@ -81,12 +79,11 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
 
         self.check_status_code_jsonify_and_expected(
             url=url,
-            code=200,
             response=response,
             method=method,
             expected=list)
 
-        data = json.loads(response.data)
+        data = response.json
         for instance in data:
             self.assertEqual(
                 instance[filter_value], tours_count,
@@ -108,7 +105,6 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
 
         self.check_status_code_jsonify_and_expected(
             url=url,
-            code=200,
             response=response,
             method=method,
             expected=dict)
@@ -126,7 +122,6 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
 
         self.check_status_code_jsonify_and_expected(
             url=url,
-            code=204,
             response=response,
             method=method,
             expected=None)
@@ -141,14 +136,13 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
 
     def test_create_method_is_available_and_works_correct(self):
         url = '/guides'
-        instance_data = json.dumps(self.instance_to_create)
-        response = self.app.post(url, data=instance_data)
-        author_response = self.author_app.post(url, data=instance_data)
+        instance_data = self.instance_to_create
+        response = self.app.post(url, json=instance_data)
+        author_response = self.author_app.post(url, json=instance_data)
         method = 'POST'
 
         self.check_status_code_jsonify_and_expected(
             url=url,
-            code=201,
             response=response,
             method=method,
             expected=dict)
