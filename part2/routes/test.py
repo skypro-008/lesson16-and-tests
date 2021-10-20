@@ -56,7 +56,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.is_json,
             (f"%@Проверьте что при запросе на адрес {url}"
              " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки Flask"))
+             " использовать функцию jsonify из библиотеки flask"))
         data = json.loads(response.data)
         self.assertTrue(
             isinstance(data, list),
@@ -96,7 +96,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.is_json,
             (f"%@Проверьте что при запросе на адрес {url}"
              " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки Flask"))
+             " использовать функцию jsonify из библиотеки flask"))
         data = json.loads(response.data)
         self.assertTrue(
             isinstance(data, list),
@@ -134,7 +134,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.is_json,
             (f"%@Проверьте что при запросе на адрес {url}"
              " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки Flask"))
+             " использовать функцию jsonify из библиотеки flask"))
         data = json.loads(response.data)
         self.assertTrue(
             isinstance(data, dict),
@@ -167,7 +167,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.is_json,
             (f"%@Проверьте что при запросе на адрес {url}"
              " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки Flask"))
+             " использовать функцию jsonify из библиотеки flask"))
         result = self.db.session.execute(
             text('select `surname` from guide where id=1')).fetchall()
         self.one_field_update.get('surname')
