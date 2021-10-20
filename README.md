@@ -51,8 +51,8 @@ Pycharm может предложить вам сделать это после 
 - part2/models_author
 - part2/models_guide
 - part2/models_singer
-- part2/tours_count
-- part2/company_none - проверить в первую очередь
+- part2/select_tours_count
+- part2/select_company_none
 - part2/update_tours_count
 - delete_rows
 - routes
