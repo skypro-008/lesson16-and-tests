@@ -1,11 +1,10 @@
 # Условия данной задачи содеражся в файле
 # task.md в корне папки с заданием
 #
-from flask import Flask, jsonify, request
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from guides_sql import CREATE_TABLE, INSERT_VALUES
-import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
@@ -28,8 +27,7 @@ class Guide(db.Model):
     is_pro = db.Column(db.Boolean)
     company = db.Column(db.Integer)
 
-
-# TODO напишите роуты здесь
+# TODO напишите необходимые роуты здесь
 
 
 if __name__ == "__main__":

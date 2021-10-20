@@ -1,5 +1,7 @@
 import sqlite3
 import sqlalchemy
+import unittest
+import json
 
 class DataBaseTestsMixin:
     """
@@ -116,3 +118,90 @@ class DataBaseTestsMixin:
                     f"%@Проверьте имеет ли поле {name} модели {model_name} "
                     f"тип {type_name}")
 
+class ResponseTestsMixin:
+    
+    def _required_args_checker(self, *args, **kwargs):
+        for test_arg in args:  # required args
+            if not kwargs.get(test_arg):
+                raise ValueError(
+                    f"key argument '{test_arg}' in TestCase"
+                     "function <check status code> must be defined")
+
+    def check_status_code_jsonify_and_expected(self: unittest.TestCase, **kwargs):
+        """
+        compex check that testing:
+        - response status code
+        - is_json type
+        - expected_obj (if arg expected is not None)
+        """
+        code: str = kwargs.get('code'),
+        url: str = kwargs.get('url'),
+        response = kwargs.get('response')
+        expected: object = kwargs.get('expected')
+        method: str = kwargs.get('method')
+        self._required_args_checker('code', 'url', 'response', **kwargs)
+        code = kwargs.get('code')
+        url = kwargs.get('url')
+        response = kwargs.get('response')
+        self.assertEqual(
+            response.status_code, code,
+            (f"%@Проверьте, адрес {url} доступен, а {method}-запрос "
+            f"возвращает код {code}"))
+        self.assertTrue(
+            response.is_json,
+            (f"%@Проверьте {method} при запросе на адрес {url}"
+             " возвращаемые данные соответсвуют формату json, попробуйте "
+             " использовать функцию jsonify из библиотеки flask"))
+        if expected:
+            data = json.loads(response.data)
+            self.assertTrue(
+                isinstance(data, expected),
+                f"%@Проверьте что в ответ на {method}-запрос по адресу {url}"
+                f"возвращается {expected}"
+            )
+        else:
+            self.assertEqual(
+                response.data, b'',
+                f"%@Проверьте что в ответ на {method}-запрос по адресу {url}"
+                f"возвращается пустое значение"
+            )
+    
+    def compare_result_fields_with_author_solution(
+        self,
+        many=False,
+        **kwargs):
+        """
+        Compare student response.data with author sulution.
+        Note:* (response.data must be not None)
+        use `many=true` for inspecting response.data which contains list
+        """
+        self._required_args_checker(
+            'method', 
+            'url', 
+            'student_response',
+            'author_response',
+            **kwargs)
+        method = kwargs.get('method')
+        url = kwargs.get('url')
+        student_response = json.loads(kwargs.get('student_response').data)
+        author_response = json.loads(kwargs.get('author_response').data)
+        if not many and isinstance(author_response, list):
+            raise ValueError('check `response.data` maybe many arg must have True value')
+        if many:
+            author_data = author_response[0]
+            data = student_response[0]
+        else:
+            author_data = author_response
+            data = student_response
+        student_keys = data.keys()
+        for key, value in author_data.items():
+            self.assertIn(
+                key,
+                student_keys,
+                f"%@ Проверьте, что ответ на {method}-запрос по адресу {url} "
+                f"содержит поле {key}")
+            self.assertEqual(
+                value,
+                data[key],
+                f"%@ Проверьте, что ответ на {method}-запрос по адресу {url} "
+                f"в поле {key} содержится правильное значение")

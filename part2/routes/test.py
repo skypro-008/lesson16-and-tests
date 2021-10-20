@@ -15,20 +15,20 @@ basepath = Path(*parts[:basefolder_index + 1])
 sys.path.append(str(basepath))
 
 from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
-from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
+from ttools.skyprotests.tests_mixins import ResponseTestsMixin  # noqa: E402
 
 
-class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
+class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
 
     @classmethod
     def setUpClass(cls):
-        cls.one_field_update = {
-            "surname": "Федоров"
-        }
-        cls.three_fields_update = {
-            "surname": "Петров",
-            "full_name": "Петр Петров",
-            "tours_count": 500,
+        cls.instance_to_create = {
+            "surname": 'Иванов',
+            "full_name": 'Иван Иванов',
+            "tours_count": 7,
+            "bio": 'Провожу экскурсии по крышам СПб',
+            "is_pro": True,
+            "company": "Удивительные экскурсии"
         }
 
     def setUp(self):
@@ -48,160 +48,123 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
     def test_get_method_is_available_and_works_correct(self):
         url = '/guides'
         response = self.app.get(url)
-        self.assertEqual(
-            response.status_code, 200,
-            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
-             "код 200"))
-        self.assertTrue(
-            response.is_json,
-            (f"%@Проверьте что при запросе на адрес {url}"
-             " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки flask"))
+        method = 'GET'
+        author_response = self.author_app.get(url)
+
+        self.check_status_code_jsonify_and_expected(
+            url=url,
+            code=200,
+            response=response,
+            method=method,
+            expected=list)
+
         data = json.loads(response.data)
-        self.assertTrue(
-            isinstance(data, list),
-            f"%@Проверьте что в ответ на GET-запрос по адресу {url}"
-            "возвращается список"
-        )
         self.assertEqual(
             len(data), 10,
-            f"%@Проверьте, что в ответ на GET-запрос по адресу {url} "
-            "возвращаются все объекты"
-        )
-        author_response = self.author_app.get(url)
-        author_data = json.loads(author_response.data)[0]
-        student_items = data[0].items()
-        for key, value in student_items:
-            self.assertIn(
-                key,
-                author_data.keys(),
-                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"содержит поле {key}")
-            self.assertEqual(
-                value,
-                author_data[key],
-                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"в поле {key} содержится правильное значение")
+            f"%@Проверьте, что в ответ на {method}-запрос по адресу {url} "
+            "возвращаются все объекты")
+
+        self.compare_result_fields_with_author_solution(
+            many=True,
+            method=method,
+            url=url,
+            author_response=author_response,
+            student_response=response)
 
     def test_get_filter_method_is_available_and_works_correct(self):
         tours_count = 1
         filter_value = 'tours_count'
         url = f'/guides?{filter_value}={tours_count}'
         response = self.app.get(url)
-        self.assertEqual(
-            response.status_code, 200,
-            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает "
-             "код 200"))
-        self.assertTrue(
-            response.is_json,
-            (f"%@Проверьте что при запросе на адрес {url}"
-             " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки flask"))
-        data = json.loads(response.data)
-        self.assertTrue(
-            isinstance(data, list),
-            f"%@Проверьте что в ответ на GET-запрос по адресу {url}"
-            "возвращается список"
-        )
         author_response = self.author_app.get(url)
-        author_data = json.loads(author_response.data)[0]
-        student_items = data[0].items()
+        method = 'GET'
+
+        self.check_status_code_jsonify_and_expected(
+            url=url,
+            code=200,
+            response=response,
+            method=method,
+            expected=list)
+
+        data = json.loads(response.data)
         for instance in data:
             self.assertEqual(
                 instance[filter_value], tours_count,
-                f"%@Проверьте что ответ на GET-запрос по адресу {url} "
-                "содержит правильные данные")
-        for key, value in student_items:
-            self.assertIn(
-                key,
-                author_data.keys(),
-                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"содержит поле {key}")
-            self.assertEqual(
-                value,
-                author_data[key],
-                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"в поле {key} содержится правильное значение")
+                f"%@Проверьте что ответ на {method}-запрос по адресу {url} "
+                "отфильтрован верно")
+
+        self.compare_result_fields_with_author_solution(
+            method=method,
+            url=url,
+            author_response=author_response,
+            student_response=response,
+            many=True)
 
     def test_get_id_method_is_available_and_works_correct(self):
         url = '/guides/1'
         response = self.app.get(url)
-        self.assertEqual(
-            response.status_code, 200,
-            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
-             "код 200"))
-        self.assertTrue(
-            response.is_json,
-            (f"%@Проверьте что при запросе на адрес {url}"
-             " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки flask"))
-        data = json.loads(response.data)
-        self.assertTrue(
-            isinstance(data, dict),
-            f"%@Проверьте что в ответ на GET-запрос по адресу {url}"
-            "возвращается словарь"
-        )
         author_response = self.author_app.get(url)
-        author_data = json.loads(author_response.data)
-        student_items = data.items()
-        for key, value in student_items:
-            self.assertIn(
-                key,
-                author_data.keys(),
-                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"содержит поле {key}")
-            self.assertEqual(
-                value,
-                author_data[key],
-                f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"в поле {key} содержится правильное значение")
+        method = 'GET'
 
-    def test_put_method_is_available_and_works_correct(self):
-        url = '/guides/1'
-        response = self.app.put(url, data=json.dumps(self.one_field_update))
-        self.assertIn(
-            response.status_code, [200, 204],
-            ("%@Проверьте, что PUT-запрос с одним полем на адрес"
-             f" {url} возвращает код 200 или 204"))
-        self.assertTrue(
-            response.is_json,
-            (f"%@Проверьте что при запросе на адрес {url}"
-             " возвращаемые данные соответсвуют формату json, попробуйте "
-             " использовать функцию jsonify из библиотеки flask"))
-        result = self.db.session.execute(
-            text('select `surname` from guide where id=1')).fetchall()
-        self.one_field_update.get('surname')
-        self.assertEqual(
-            result[0][0], self.one_field_update.get('surname'),
-            ("%@Проверьте, что при выполнении PUT-запроса с изменением одного "
-             " поля происходят соответствующие изменения в БД"))
-        self.app.put(url, data=json.dumps(self.three_fields_update))
-        result = self.db.session.execute(
-            text('select `surname`, `full_name`, `tours_count` from guide where id=1')).fetchall()
-        for value in self.three_fields_update.values():
-            self.assertIn(
-                value, result[0],
-                ("%@Проверьте, что при выполнении PUT-запроса с"
-                 " изменением нескольких полей происходят"
-                 " соответствующие изменения в БД"))
-        self.assertIn(
-            response.status_code, [200, 204],
-            ("%@Проверьте, что PUT-запрос с несколькими полями на адрес"
-             f" {url} возвращает код 200 или 204"))
+        self.check_status_code_jsonify_and_expected(
+            url=url,
+            code=200,
+            response=response,
+            method=method,
+            expected=dict)
+
+        self.compare_result_fields_with_author_solution(
+            method=method,
+            url=url,
+            author_response=author_response,
+            student_response=response)
 
     def test_delete_method_is_available_and_works_correct(self):
-        url = '/guides/1'
-        response = self.app.post(url)
-        self.assertEqual(
-            response.status_code, 204,
-            (f"%@Проверьте, что POST-запрос на адрес"
-             f" {url} возвращает код 200 или 204"))
+        url = '/guides/1/delete'
+        response = self.app.get(url)
+        method = 'GET'
+
+        self.check_status_code_jsonify_and_expected(
+            url=url,
+            code=204,
+            response=response,
+            method=method,
+            expected=None)
+
         result = self.db.session.execute(
             text('select * from guide where id=1')).fetchall()
         self.assertTrue(
             result == [],
-            f"%@Проверьте что POST-запрос на адрес {url} "
+            f"%@Проверьте что {method}-запрос на адрес {url} "
             " удаляет запись из базы данных"
+        )
+
+    def test_create_method_is_available_and_works_correct(self):
+        url = '/guides'
+        instance_data = json.dumps(self.instance_to_create)
+        response = self.app.post(url, data=instance_data)
+        author_response = self.author_app.post(url, data=instance_data)
+        method = 'POST'
+
+        self.check_status_code_jsonify_and_expected(
+            url=url,
+            code=201,
+            response=response,
+            method=method,
+            expected=dict)
+
+        self.compare_result_fields_with_author_solution(
+            method=method,
+            url=url,
+            author_response=author_response,
+            student_response=response)
+
+        result = self.db.session.execute(
+            text('select * from guide where id=11')).fetchall()
+        self.assertTrue(
+            result != [],
+            f"%@Проверьте что {method}-запрос на адрес {url} "
+            " создаёт запись из базы данных"
         )
 
     def tearDown(self):
