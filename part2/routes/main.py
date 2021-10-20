@@ -36,7 +36,7 @@ def find_by_tc():
     r = []
     if tours_count:
         for g in guides:
-            if g.tours_count == int(tours_count):
+            if g.tours_count == int(tours_count) + 1:
                 r.append({
                     "id": g.id,
                     "surname": g.surname,

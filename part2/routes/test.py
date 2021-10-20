@@ -68,6 +68,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         author_data = json.loads(author_response.data)[0]
         student_items = data[0].items()
         for key, value in student_items:
+            breakpoint()
             self.assertIn(
                 key,
                 author_data.keys(),
@@ -77,7 +78,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
                 value,
                 author_data[key],
                 f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"содержит поле {key}")
+                f"в поле {key} содержится правильное значение")
 
     def test_get_filter_method_is_available_and_works_correct(self):
         tours_count = 1
@@ -86,7 +87,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         response = self.app.get(url)
         self.assertEqual(
             response.status_code, 200,
-            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
+            (f"%@Проверьте, что GET-запрос на адрес {url} возвращает "
              "код 200"))
         data = json.loads(response.data)
         self.assertTrue(
@@ -97,6 +98,11 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         author_response = self.author_app.get(url)
         author_data = json.loads(author_response.data)[0]
         student_items = data[0].items()
+        for instance in data:
+            self.assertEqual(
+                instance[filter_value], tours_count,
+                f"%@Проверьте что ответ на GET-запросе по адресу {url} "
+                "содержит правильные данные")
         for key, value in student_items:
             self.assertIn(
                 key,
@@ -107,12 +113,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
                 value,
                 author_data[key],
                 f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"содержит поле {key}")
-        for instance in data:
-            self.assertEqual(
-                instance[filter_value], tours_count,
-                f"%@Проверьте что ответ на GET-запросе по адресу {url} "
-                "содержит правильные данные")
+                f"в поле {key} содержится правильное значение")
 
     def test_get_id_method_is_available_and_works_correct(self):
         url = '/guides/1'
@@ -140,7 +141,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
                 value,
                 author_data[key],
                 f"%@ Проверьте, что ответ на GET-запрос по адресу {url} "
-                f"содержит поле {key}")
+                f"в поле {key} содержится правильное значение")
 
     def test_put_method_is_available_and_works_correct(self):
         url = '/guides/1'
