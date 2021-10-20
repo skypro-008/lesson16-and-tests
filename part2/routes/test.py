@@ -52,6 +52,11 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.status_code, 200,
             (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
              "код 200"))
+        self.assertTrue(
+            response.is_json,
+            (f"%@Проверьте что при запросе на адрес {url}"
+             " возвращаемые данные соответсвуют формату json, попробуйте "
+             " использовать функцию jsonify из библиотеки Flask"))
         data = json.loads(response.data)
         self.assertTrue(
             isinstance(data, list),
@@ -87,6 +92,11 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.status_code, 200,
             (f"%@Проверьте, что GET-запрос на адрес {url} возвращает "
              "код 200"))
+        self.assertTrue(
+            response.is_json,
+            (f"%@Проверьте что при запросе на адрес {url}"
+             " возвращаемые данные соответсвуют формату json, попробуйте "
+             " использовать функцию jsonify из библиотеки Flask"))
         data = json.loads(response.data)
         self.assertTrue(
             isinstance(data, list),
@@ -120,6 +130,11 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.status_code, 200,
             (f"%@Проверьте, что GET-запрос на адрес {url} возвращает"
              "код 200"))
+        self.assertTrue(
+            response.is_json,
+            (f"%@Проверьте что при запросе на адрес {url}"
+             " возвращаемые данные соответсвуют формату json, попробуйте "
+             " использовать функцию jsonify из библиотеки Flask"))
         data = json.loads(response.data)
         self.assertTrue(
             isinstance(data, dict),
@@ -148,6 +163,11 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             response.status_code, [200, 204],
             ("%@Проверьте, что PUT-запрос с одним полем на адрес"
              f" {url} возвращает код 200 или 204"))
+        self.assertTrue(
+            response.is_json,
+            (f"%@Проверьте что при запросе на адрес {url}"
+             " возвращаемые данные соответсвуют формату json, попробуйте "
+             " использовать функцию jsonify из библиотеки Flask"))
         result = self.db.session.execute(
             text('select `surname` from guide where id=1')).fetchall()
         self.one_field_update.get('surname')

@@ -65,7 +65,7 @@ def find_by_tc():
 def find_by_id(gid: int):
     if request.method == "GET":
         g = Guide.query.get(gid)
-        return json.dumps({
+        return jsonify({
             "id": g.id,
             "surname": g.surname,
             "full_name": g.full_name,
