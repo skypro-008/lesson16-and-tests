@@ -68,7 +68,6 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         author_data = json.loads(author_response.data)[0]
         student_items = data[0].items()
         for key, value in student_items:
-            breakpoint()
             self.assertIn(
                 key,
                 author_data.keys(),
@@ -101,7 +100,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
         for instance in data:
             self.assertEqual(
                 instance[filter_value], tours_count,
-                f"%@Проверьте что ответ на GET-запросе по адресу {url} "
+                f"%@Проверьте что ответ на GET-запрос по адресу {url} "
                 "содержит правильные данные")
         for key, value in student_items:
             self.assertIn(
