@@ -53,17 +53,17 @@ def get_all_and_by_tours_count():
         guides = Guide.query.all()
         for guide in guides:
             result.append(instance_to_dict(guide))
-        return jsonify(result), 200
+        return jsonify(result)
     guides = Guide.query.filter_by(tours_count=tours_count)
     for guide in guides:
         result.append(instance_to_dict(guide))
-    return jsonify(result), 200
+    return jsonify(result)
 
 
 @app.route("/guides/<int:gid>", methods=['GET'])
 def get_one(gid):
     guide = Guide.query.get(gid)
-    return jsonify(instance_to_dict(guide)), 200
+    return jsonify(instance_to_dict(guide))
 
 
 @app.route("/guides/<int:gid>/delete")
@@ -71,7 +71,7 @@ def delete_guide(gid):
     guide = Guide.query.get(gid)
     db.session.delete(guide)
     db.session.commit()
-    return "", 204
+    return jsonify("")
 
 
 @app.route("/guides", methods=['POST'])
@@ -87,7 +87,7 @@ def create_guide():
     )
     db.session.add(guide)
     db.session.commit()
-    return jsonify(instance_to_dict(guide)), 201
+    return jsonify(instance_to_dict(guide))
 
 
 if __name__ == "__main__":
