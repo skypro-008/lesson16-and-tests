@@ -44,7 +44,7 @@
     # возвращались гиды с нужным количеством туров.
 """
 
-from flask import Flask, jsonify, request
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from guides_sql import CREATE_TABLE, INSERT_VALUES
