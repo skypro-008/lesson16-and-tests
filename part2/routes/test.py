@@ -3,7 +3,6 @@ import unittest
 from pathlib import Path
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 from sqlalchemy import text
-from flask_sqlalchemy import SQLAlchemy
 import json
 import main
 import solution
