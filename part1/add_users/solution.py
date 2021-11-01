@@ -46,6 +46,7 @@ Ivan = User(
     id=5,
     password="5YGRPtYlw",
     full_name="Иван Горячий",
+    email='vanyahot888@inmail.com',
     city_ru="Сочи")
 
 users = (Ludmila, Andrew, George, Oksana, Ivan)
