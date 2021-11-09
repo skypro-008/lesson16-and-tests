@@ -1,13 +1,14 @@
 import sys
 import unittest
+import os
 from pathlib import Path
 
 import main
 
-BASENAME = 'lesson16-and-tests'
+project_name = Path(os.path.abspath(__file__)).parent.parent.parent.name
 cwd = Path.cwd()
 parts = cwd.parts
-basefolder_index = parts.index(BASENAME)
+basefolder_index = parts.index(project_name)
 basepath = Path(*parts[:basefolder_index + 1])
 sys.path.append(str(basepath))
 
