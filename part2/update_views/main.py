@@ -15,15 +15,18 @@ from sqlalchemy import text
 from flask_sqlalchemy import SQLAlchemy
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSON_AS_ASCII'] = False
-app.url_map.strict_slashes = False
-db = SQLAlchemy(app)
-with db.session.begin():
-    db.session.execute(text(CREATE_TABLE))
-    db.session.execute(text(INSERT_VALUES))
+import prettytable
+from sqlalchemy import create_engine, text, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+from guides_sql import CREATE_TABLE, INSERT_VALUES
+
+engine = create_engine('sqlite:///:memory:')
+db = declarative_base(bind=engine)
+Session = sessionmaker(bind=engine)
+with Session() as session:
+    session.execute(text(CREATE_TABLE))
+    session.execute(text(INSERT_VALUES))
+    session.commit()
 
 
 class Guide(db.Model):

@@ -45,7 +45,7 @@ Pycharm может предложить вам сделать это после 
 - part1/add_cities
 - part1/add_users
 - part1/get_records
-- part1/update_views
+
 
 #### Часть 2:
 - part2/models_author
@@ -54,6 +54,7 @@ Pycharm может предложить вам сделать это после 
 - part2/select_tours_count
 - part2/select_company_none
 - part2/update_tours_count
+- part1/update_views
 - delete_rows
 - routes
 
