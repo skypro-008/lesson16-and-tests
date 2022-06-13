@@ -30,16 +30,9 @@ class User(db):
 
     @classmethod
     def delete(cls, id):
-        with Session() as session:
-            user = session.query(cls).get(id)
-            session.delete(user)
-            session.commit()
+        pass  # TODO напишите метод для модели здесь
 
     @classmethod
     def update(cls, id, **kwargs):
-        with Session() as session:
-            user = session.query(cls).get(id)
-            for key, value in kwargs.items():
-                setattr(user, key, value)
-            session.commit()
+        pass  # TODO напишите метод для модели здесь
 
