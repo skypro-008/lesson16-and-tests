@@ -55,9 +55,9 @@ Pycharm может предложить вам сделать это после 
 - part2/select_tours_count
 - part2/select_company_none
 - part2/update_tours_count
-- part2/update_views
+- part2/get_methods
 - part2/delete_rows
-- part2/routes
+- part2/crud_methods
 
 Задачи описаны в комментариях в файле main.py
 В текущих заданиях вы будете работать с Flask.
