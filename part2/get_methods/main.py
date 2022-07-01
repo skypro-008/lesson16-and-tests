@@ -1,5 +1,10 @@
-import prettytable
-
+# Имеется наполненная БД с таблицей guide.
+# Напишите 2 метода для таблицы Guide
+#
+# get_all() - возвращающий всех гидов
+#
+# get(guide_id) - возвращающий гида по id
+#
 from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker
 from guides_sql import CREATE_TABLE, INSERT_VALUES
@@ -25,20 +30,11 @@ class Guide(db):
     company = Column(Integer)
 
     @classmethod
-    def update_tours_counter(cls, guide_id):
-        with Session() as ses:
-            ses.query(cls).filter(cls.id==guide_id).update({"tours_count": Guide.tours_count + 1})
-            ses.commit()
+    def get_all(cls):
+        # TODO напишите Ваш код здесь
+        pass
 
-# не удаляйте код ниже, он необходим
-# для выдачи результата запроса
-
-
-Guide.update_tours_counter(1)
-ses = Session()
-cursor = ses.execute("SELECT * FROM guide WHERE `id`=1").cursor
-mytable = prettytable.from_db_cursor(cursor)
-mytable.max_width = 30
-
-if __name__ == '__main__':
-    print(mytable)
+    @classmethod
+    def get(cls, guide_id):
+        # TODO напишите Ваш код здесь
+        pass

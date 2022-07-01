@@ -8,24 +8,26 @@
 # Возраст - не больше 35 лет - age
 # Группа - не может быть Null (None) - group
 #
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import prettytable
+from sqlalchemy import create_engine, Integer, Column, String, CheckConstraint
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+engine = create_engine('sqlite:///:memory:')
+db = declarative_base(bind=engine)
+Session = sessionmaker(bind=engine)
 
 
-class Singer(db.Model):
+class Singer(db):
     __tablename__ = 'singer'
-    # TODO напишите поля для модели Singer
+    # TODO напишите поля модели здесь
 
 
-db.drop_all()
-db.create_all()
-session = db.session()
+# Не удаляйте код ниже, он нужен для корректного
+# отображения созданной вами модели
+
+db.metadata.drop_all()
+db.metadata.create_all()
+session = Session()
 cursor = session.execute("SELECT * from singer").cursor
 mytable = prettytable.from_db_cursor(cursor)
 session.close()

@@ -45,7 +45,8 @@ Pycharm может предложить вам сделать это после 
 - part1/add_cities
 - part1/add_users
 - part1/get_records
-- part1/update_views
+- part1/upd_delete_records
+
 
 #### Часть 2:
 - part2/models_author
@@ -54,8 +55,9 @@ Pycharm может предложить вам сделать это после 
 - part2/select_tours_count
 - part2/select_company_none
 - part2/update_tours_count
-- delete_rows
-- routes
+- part2/get_methods
+- part2/delete_rows
+- part2/crud_methods
 
 Задачи описаны в комментариях в файле main.py
 В текущих заданиях вы будете работать с Flask.

@@ -1,5 +1,7 @@
+# Напишите функцию delete_guides, которая
+# удаляет из базы гидов c id = 1,4,7
+#
 import prettytable
-
 from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker
 from guides_sql import CREATE_TABLE, INSERT_VALUES
@@ -24,26 +26,18 @@ class Guide(db):
     is_pro = Column(Boolean)
     company = Column(Integer)
 
-    @classmethod
-    def get_experts(cls):
-        with Session() as ses:
-            experts = ses.query(cls).filter(cls.tours_count > 3).all()
-        return experts
 
-# не удаляйте код ниже, он необходим
-# для выдачи результата запроса
+def delete_guides():
+    # TODO напишите Ваше решение здесь
+    pass
 
 
-mytable = prettytable.PrettyTable()
-mytable.field_names = [
-    'id', 'surname', 'full_name',
-    'tours_count', 'bio', 'is_pro', 'company']
+delete_guides()
+session = Session()
+cursor = session.execute("SELECT * FROM guide").cursor
+mytable = prettytable.from_db_cursor(cursor)
+mytable.max_width = 30
 
-rows = [[x.id, x.surname, x.full_name,
-         x.tours_count, x.bio, x.is_pro, x.company] for x in Guide.get_experts()]
-mytable.add_rows(rows)
-mytable.max_width = 25
-
-if __name__ == "__main__":
-    print('Запрос возвращает следующие записи:')
+if __name__ == '__main__':
+    print('БАЗА ДАННЫХ:')
     print(mytable)

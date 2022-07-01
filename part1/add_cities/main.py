@@ -16,33 +16,31 @@
 #
 #
 import prettytable
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+from sqlalchemy import create_engine, Column, String, Integer
+from sqlalchemy.orm import declarative_base, sessionmaker, Query
 
 
-class City(db.Model):
+engine = create_engine('sqlite:///:memory:')
+db = declarative_base(bind=engine)
+Session = sessionmaker(bind=engine)
+
+
+class City(db):
     __tablename__ = 'city'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    country_ru = db.Column(db.String)
-    population = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    country_ru = Column(String)
+    population = Column(Integer)
 
 
-db.create_all()
+db.metadata.create_all()
 
-# TODO напишите здесь код с запросом на добавление
-# строк в таблицу
-#
-# Не удаляйте код ниже, он нужен для корректного отображения
-# созданной вами модели при запуске файла
+with Session() as session:
+    pass  # TODO напишите Ваш запрос здесь
 
-session = db.session()
-cursor = session.execute(f"SELECT * from {City.__tablename__}").cursor
+
+# Не удаляйте код ниже, он нужен, чтобы вывести результат запроса
+cursor = engine.execute(Query(City).statement).cursor
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 
