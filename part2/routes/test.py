@@ -32,139 +32,98 @@ class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
         }
 
     def setUp(self):
-        self.app = main.app.test_client()
-        self.db = main.db
-        self.db.drop_all()
-        with self.db.session.begin():
-            self.db.session.execute(text(CREATE_TABLE))
-            self.db.session.execute(text(INSERT_VALUES))
-        self.author_app = solution.app.test_client()
-        self.author_db = solution.db
-        self.author_db.drop_all()
-        with self.db.session.begin():
-            self.author_db.session.execute(text(CREATE_TABLE))
-            self.author_db.session.execute(text(INSERT_VALUES))
+        main.db.metadata.drop_all()
+        solution.db.metadata.drop_all()
+        self.guide = main.Guide
+        self.author_guide = solution.Guide
 
-    def test_get_method_is_available_and_works_correct(self):
-        url = '/guides'
-        response = self.app.get(url)
-        method = 'GET'
-        author_response = self.author_app.get(url)
+        with main.Session() as ses:
+            ses.execute(text(CREATE_TABLE))
+            ses.execute(text(INSERT_VALUES))
+            ses.commit()
 
-        self.check_status_code_jsonify_and_expected(
-            url=url,
-            response=response,
-            method=method,
-            expected=list)
+        with solution.Session() as ses:
+            ses.execute(text(CREATE_TABLE))
+            ses.execute(text(INSERT_VALUES))
+            ses.commit()
 
-        data = response.json
-        self.assertEqual(
-            len(data), 10,
-            f"%@Проверьте, что в ответ на {method}-запрос по адресу {url} "
-            "возвращаются все объекты")
-
-        self.compare_result_fields_with_author_solution(
-            many=True,
-            method=method,
-            url=url,
-            author_response=author_response,
-            student_response=response)
-
-    def test_get_filter_method_is_available_and_works_correct(self):
-        tours_count = 1
-        filter_value = 'tours_count'
-        url = f'/guides?{filter_value}={tours_count}'
-        response = self.app.get(url)
-        author_response = self.author_app.get(url)
-        method = 'GET'
-
-        self.check_status_code_jsonify_and_expected(
-            url=url,
-            response=response,
-            method=method,
-            expected=list)
-
-        data = response.json
-        for instance in data:
-            self.assertEqual(
-                instance[filter_value], tours_count,
-                f"%@Проверьте что ответ на {method}-запрос по адресу {url} "
-                "отфильтрован верно")
-
-        self.compare_result_fields_with_author_solution(
-            method=method,
-            url=url,
-            author_response=author_response,
-            student_response=response,
-            many=True)
-
-    def test_get_id_method_is_available_and_works_correct(self):
-        url = '/guides/1'
-        response = self.app.get(url)
-        author_response = self.author_app.get(url)
-        method = 'GET'
-
-        self.check_status_code_jsonify_and_expected(
-            url=url,
-            response=response,
-            method=method,
-            expected=dict)
-
-        self.compare_result_fields_with_author_solution(
-            method=method,
-            url=url,
-            author_response=author_response,
-            student_response=response)
-
-    def test_delete_method_is_available_and_works_correct(self):
-        url = '/guides/1/delete'
-        response = self.app.get(url)
-        method = 'GET'
-
-        self.check_status_code_jsonify_and_expected(
-            url=url,
-            response=response,
-            method=method,
-            expected=None)
-
-        result = self.db.session.execute(
-            text('select * from guide where id=1')).fetchall()
+    def test_get_all_method_works_correct(self):
+        try:
+            guides = self.guide.get_all()
+        except Exception:
+            self.fail("Проверьте, что метод Guide.get_all работает корректно")
         self.assertTrue(
-            result == [],
-            f"%@Проверьте что {method}-запрос на адрес {url} "
-            " удаляет запись из базы данных"
+            isinstance(guides, list),
+            "Проверьте, что метод get_all возвращает список"
+        )
+        self.assertTrue(
+            len(guides) == len(self.author_guide.get_all()),
+            "Проверьте, что метод get_all возвращает все записи"
+        )
+        self.assertTrue(
+            isinstance(guides[0], self.guide),
+            "Проверьте, что метод get_all возвращает список, в котором содержатся экземпляры класса Guide"
         )
 
-    def test_create_method_is_available_and_works_correct(self):
-        url = '/guides'
-        instance_data = self.instance_to_create
-        response = self.app.post(url, json=instance_data)
-        author_response = self.author_app.post(url, json=instance_data)
-        method = 'POST'
-
-        self.check_status_code_jsonify_and_expected(
-            url=url,
-            response=response,
-            method=method,
-            expected=dict)
-
-        self.compare_result_fields_with_author_solution(
-            method=method,
-            url=url,
-            author_response=author_response,
-            student_response=response)
-
-        result = self.db.session.execute(
-            text('select * from guide where id=11')).fetchall()
+    def test_get_by_id_method_works_correct(self):
+        guide_id = 3
+        try:
+            guide = self.guide.get(guide_id)
+        except Exception:
+            self.fail("Проверьте что метод Guide.get работает корректно")
         self.assertTrue(
-            result != [],
-            f"%@Проверьте что {method}-запрос на адрес {url} "
-            " создаёт запись из базы данных"
+            isinstance(guide, main.Guide),
+            "Проверьте, что метод get возвращает объект Guide"
+        )
+        self.assertTrue(
+            guide.id == guide_id,
+            "Проверьте, что метод get возвращает объект с правильным id"
         )
 
-    def tearDown(self):
-        self.db.session.close()
-        self.author_db.session.close()
+    def test_delete_method_works_correct(self):
+        guide_id = 4
+        with main.Session() as ses:
+            guides_count = ses.query(main.Guide).count()
+        try:
+            self.guide.delete(guide_id)
+        except Exception:
+            self.fail("Проверьте, что метод delete работает корректно")
+        with main.Session() as ses:
+            guides_count_after_delete = ses.query(main.Guide).count()
+        self.assertTrue(
+            guides_count == guides_count_after_delete + 1,
+            "Проверьте, что метод delete удаляет объект из базы"
+        )
+
+    def test_create_method_works_correct(self):
+        with main.Session() as ses:
+            guides_count = ses.query(main.Guide).count()
+        try:
+            new_guide = self.guide.create(**self.instance_to_create)
+        except Exception:
+            self.fail("Проверьте, что метод Guide.create работает при передаче ей всех аргументов модели")
+        with main.Session() as ses:
+            guides_count_after_create = ses.query(main.Guide).count()
+        self.assertTrue(
+            guides_count == guides_count_after_create - 1,
+            "Проверьте, что метод create создает объект из базы"
+        )
+
+    def test_filter_method_works_correct(self):
+        expected_tours_count = 5
+        try:
+            filtered_guides = self.guide.filter_by_tours_count(expected_tours_count)
+        except Exception:
+            self.fail("Проверьте, что метод Guide.filter_by_tours_count работает корректно")
+        self.assertTrue(
+            isinstance(filtered_guides, list),
+            "Проверьте, что метод filter_by_tours_count возвращает список объектов"
+        )
+        for guide in filtered_guides:
+            self.assertTrue(
+                guide.tours_count == expected_tours_count,
+                "Проверьте, что метод filter_by_tours_count корректно фильтрует объекты"
+            )
 
 
 if __name__ == "__main__":

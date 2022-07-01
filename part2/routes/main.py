@@ -5,73 +5,81 @@
 
 """
     # Задание
+    #
     # Шаг 1.
     # ######
-    # Создайте представение для эндпоинта GET /guides
-    # которое возвращает список всех гидов со всеми полями
-    # в формате JSON
-    #
+    # Напишите метод модели Guide.get_all()
+    # который возвращает список всех объектов из базы
     #
     # Шаг 2.
     # ######
-    # - Создайте представение для эндпоинта GET /guides/{id}
-    # которое возвращает одного гида со всеми полями
-    # в формате JSON в соответствии с его id
+    # Напишите метод модели Guide.get(guide_id)
+    # который возвращает объект из базы
+    # в соответствии с его id
     #
     # Шаг 3.
     # ######
-    # Создайте представение для эндпоинта
-    # GET /guides/{id}/delete`, которое удаляет
-    # одного гида в соответствии с его `id`
+    # Напишите метод модели Guide.delete(guide_id)
+    # который удаляет объект из базы
     #
     # Шаг 4.
     # ######
-    # Создайте представление для эндпоинта POST /guides
-    #  которое добавляет в базу данных гида, при получении
-    # следующих данных:
-    # {
-    #     "surname": "Иванов",
-    #     "full_name": "Иван Иванов",
-    #     "tours_count": 7,
-    #     "bio": "Провожу экскурсии",
-    #     "is_pro": true,
-    #     "company": "Удивительные экскурсии"
-    # }
+    # Напишите метод модели Guide.create(**kwargs)
+    # который добавляет объект в базу данных
+    #
     # Шаг 5.
     # ######
-    # - Допишите представление из шага 1 для фильтрации так,
-    # чтобы при получении запроса типа /guides?tours_count=1
-    # возвращались гиды с нужным количеством туров.
+    # Напишите метод модели Guide.filter_by_tours_count(tour_count)
+    # который будет возвращать список объектов из базы данных в соответствии
+    # с полученным количеством туров.
+    #
 """
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
+from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
+from sqlalchemy.orm import declarative_base, sessionmaker
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSON_AS_ASCII'] = False
-app.url_map.strict_slashes = False
-db = SQLAlchemy(app)
-with db.session.begin():
-    db.session.execute(text(CREATE_TABLE))
-    db.session.execute(text(INSERT_VALUES))
+engine = create_engine('sqlite:///:memory:')
+db = declarative_base(bind=engine)
+Session = sessionmaker(bind=engine)
+
+with Session() as session:
+    session.execute(text(CREATE_TABLE))
+    session.execute(text(INSERT_VALUES))
+    session.commit()
 
 
-class Guide(db.Model):
+class Guide(db):
     __tablename__ = 'guide'
-    id = db.Column(db.Integer, primary_key=True)
-    surname = db.Column(db.String)
-    full_name = db.Column(db.String)
-    tours_count = db.Column(db.Integer)
-    bio = db.Column(db.String)
-    is_pro = db.Column(db.Boolean)
-    company = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    surname = Column(String)
+    full_name = Column(String)
+    tours_count = Column(Integer)
+    bio = Column(String)
+    is_pro = Column(Boolean)
+    company = Column(Integer)
 
-# TODO напишите роуты здесь
+    @classmethod
+    def get_all(cls):
+        # TODO напишите Ваш код здесь
+        pass
 
+    @classmethod
+    def get(cls, guide_id):
+        # TODO напишите Ваш код здесь
+        pass
 
-if __name__ == "__main__":
-    app.run()
+    @classmethod
+    def delete(cls, guide_id):
+        # TODO напишите Ваш код здесь
+        pass
+
+    @classmethod
+    def create(cls, **kwargs):
+        # TODO напишите Ваш код здесь
+        pass
+
+    @classmethod
+    def filter_by_tours_count(cls, tours_count):
+        # TODO напишите Ваш код здесь
+        pass
