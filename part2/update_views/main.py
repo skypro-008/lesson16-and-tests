@@ -1,62 +1,40 @@
-# Имеется наполненная БД с таблицей guide и полуготовый код на фласке.
-# Напишите представления для следующих ендпоинтов:
+# Имеется наполненная БД с таблицей guide.
+# Напишите 2 метода для таблицы Guide
 #
-# Method: GET
-# URL: /guides
-# Response: [{guide_json}, {guide_json}, {guide_json}]
+# get_all() - возвращающий всех гидов
 #
-# Method: GET
-# URL: /guides/1
-# Response: { <guide_json> }
+# get(guide_id) - возвращающий гида по id
 #
-#
-from flask import Flask
-from sqlalchemy import text
-from flask_sqlalchemy import SQLAlchemy
-from guides_sql import CREATE_TABLE, INSERT_VALUES
-
-import prettytable
-from sqlalchemy import create_engine, text, Column, Integer, String
+from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 
 engine = create_engine('sqlite:///:memory:')
 db = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
+
 with Session() as session:
     session.execute(text(CREATE_TABLE))
     session.execute(text(INSERT_VALUES))
     session.commit()
 
 
-class Guide(db.Model):
+class Guide(db):
     __tablename__ = 'guide'
-    id = db.Column(db.Integer, primary_key=True)
-    surname = db.Column(db.String)
-    full_name = db.Column(db.String)
-    tours_count = db.Column(db.Integer)
-    bio = db.Column(db.String)
-    is_pro = db.Column(db.Boolean)
-    company = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    surname = Column(String)
+    full_name = Column(String)
+    tours_count = Column(Integer)
+    bio = Column(String)
+    is_pro = Column(Boolean)
+    company = Column(Integer)
 
+    @classmethod
+    def get_all(cls):
+        # TODO напишите Ваш код здесь
+        pass
 
-@app.route("/guides")
-def get_guides():
-    # TODO допишите представления
-    pass
-
-
-@app.route("/guides/<int:gid>")
-def get_guide(gid):
-    # TODO допишите представления
-    pass
-
-# чтобы увидеть результат работы функций
-# запустите фаил и
-# перейдите по адресу:
-# 127.0.0.1:5000/guides
-# 127.0.0.1:5000/guides/1
-
-
-if __name__ == "__main__":
-    app.run()
+    @classmethod
+    def get(cls, guide_id):
+        # TODO напишите Ваш код здесь
+        pass

@@ -1,6 +1,5 @@
 # Напишите метод get_freelancers, который
-# вернет из таблицы 'guide' список гидов,
-# у которых нет компании (company=None)
+# вернет из таблицы 'guide' список гидов без компании (company=None)
 #
 import prettytable
 

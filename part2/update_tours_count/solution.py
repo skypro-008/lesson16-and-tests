@@ -1,43 +1,42 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import prettytable
-from sqlalchemy import text
+
+from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
+from sqlalchemy.orm import declarative_base, sessionmaker
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-with db.session.begin():
-    db.session.execute(text(CREATE_TABLE))
-    db.session.execute(text(INSERT_VALUES))
+engine = create_engine('sqlite:///:memory:')
+db = declarative_base(bind=engine)
+Session = sessionmaker(bind=engine)
+
+with Session() as session:
+    session.execute(text(CREATE_TABLE))
+    session.execute(text(INSERT_VALUES))
+    session.commit()
 
 
-class Guide(db.Model):
+class Guide(db):
     __tablename__ = 'guide'
-    id = db.Column(db.Integer, primary_key=True)
-    surname = db.Column(db.String)
-    full_name = db.Column(db.String)
-    tours_count = db.Column(db.Integer)
-    bio = db.Column(db.String)
-    is_pro = db.Column(db.Boolean)
-    company = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    surname = Column(String)
+    full_name = Column(String)
+    tours_count = Column(Integer)
+    bio = Column(String)
+    is_pro = Column(Boolean)
+    company = Column(Integer)
 
+    @classmethod
+    def update_tours_counter(cls, guide_id):
+        with Session() as ses:
+            ses.query(cls).filter(cls.id==guide_id).update({"tours_count": Guide.tours_count + 1})
+            ses.commit()
 
-def update_tours_count():
-    # solution
-    g = Guide.query.get(1)
-    g.tours_count = 6
-    db.session.add(g)
-    db.session.commit()
-    db.session.close()
 # не удаляйте код ниже, он необходим
 # для выдачи результата запроса
 
 
-update_tours_count()
-session = db.session()
-cursor = session.execute("SELECT * FROM guide WHERE `id`=1").cursor
+Guide.update_tours_counter(1)
+ses = Session()
+cursor = ses.execute("SELECT * FROM guide WHERE `id`=1").cursor
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 

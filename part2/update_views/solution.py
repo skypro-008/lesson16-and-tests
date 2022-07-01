@@ -1,61 +1,35 @@
-from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
+from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
+from sqlalchemy.orm import declarative_base, sessionmaker
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSON_AS_ASCII'] = False
-app.url_map.strict_slashes = False
-db = SQLAlchemy(app)
-with db.session.begin():
-    db.session.execute(text(CREATE_TABLE))
-    db.session.execute(text(INSERT_VALUES))
+engine = create_engine('sqlite:///:memory:')
+db = declarative_base(bind=engine)
+Session = sessionmaker(bind=engine)
+
+with Session() as session:
+    session.execute(text(CREATE_TABLE))
+    session.execute(text(INSERT_VALUES))
+    session.commit()
 
 
-class Guide(db.Model):
+class Guide(db):
     __tablename__ = 'guide'
-    id = db.Column(db.Integer, primary_key=True)
-    surname = db.Column(db.String)
-    full_name = db.Column(db.String)
-    tours_count = db.Column(db.Integer)
-    bio = db.Column(db.String)
-    is_pro = db.Column(db.Boolean)
-    company = db.Column(db.Integer)
+    id = Column(Integer, primary_key=True)
+    surname = Column(String)
+    full_name = Column(String)
+    tours_count = Column(Integer)
+    bio = Column(String)
+    is_pro = Column(Boolean)
+    company = Column(Integer)
 
+    @classmethod
+    def get_all(cls):
+        with Session() as ses:
+            guides = session.query(Guide).all()
+        return guides
 
-@app.route("/guides")
-def get_guides():
-    guides = Guide.query.all()
-    result = []
-    for guide in guides:
-        result.append({
-            "id": guide.id,
-            "surname": guide.surname,
-            "full_name": guide.full_name,
-            "tours_count": guide.tours_count,
-            "bio": guide.bio,
-            "is_pro": guide.is_pro,
-            "company": guide.company,
-        })
-    return jsonify(result)
-
-
-@app.route("/guides/<int:gid>")
-def get_user(gid):
-    guide = Guide.query.get(gid)
-    guides = {
-        "id": guide.id,
-        "surname": guide.surname,
-        "full_name": guide.full_name,
-        "tours_count": guide.tours_count,
-        "bio": guide.bio,
-        "is_pro": guide.is_pro,
-        "company": guide.company,
-    }
-    return jsonify(guides)
-
-
-if __name__ == "__main__":
-    app.run()
+    @classmethod
+    def get(cls, guide_id):
+        with Session() as ses:
+            guide = session.query(Guide).filter_by(id=guide_id).first()
+        return guide

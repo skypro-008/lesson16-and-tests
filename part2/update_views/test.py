@@ -2,7 +2,8 @@ import sys
 import unittest
 import os
 from pathlib import Path
-
+from guides_sql import CREATE_TABLE, INSERT_VALUES
+from sqlalchemy import text
 import main
 import solution
 
@@ -14,108 +15,70 @@ basepath = Path(*parts[:basefolder_index + 1])
 sys.path.append(str(basepath))
 
 from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
-from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
+from ttools.skyprotests.tests_mixins import ResponseTestsMixin  # noqa: E402
 
 
-class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
+class RoutesTestCase(SkyproTestCase, ResponseTestsMixin):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.instance_to_create = {
+            "surname": "Иванов",
+            "full_name": "Иван Иванов",
+            "tours_count": 7,
+            "bio": "Провожу экскурсии по крышам СПб",
+            "is_pro": True,
+            "company": "Удивительные экскурсии"
+        }
 
     def setUp(self):
-        self.app = main.app.test_client()
-        self.guides = self.app.get('/guides')
-        self.guide_id = self.app.get('/guides/3')
-        self.author_app = solution.app.test_client()
-        self.author_guides = self.author_app.get('/guides')
-        self.author_guide_id = self.author_app.get('/guides/3')
+        main.db.metadata.drop_all()
+        solution.db.metadata.drop_all()
+        self.guide = main.Guide
+        self.author_guide = solution.Guide
 
-    def test_guides_page_is_available(self):
-        self.assertEqual(
-            self.guides.status_code, 200,
-            "%@Проверьте, что адрес '/guides' доступен")
+        with main.Session() as ses:
+            ses.execute(text(CREATE_TABLE))
+            ses.execute(text(INSERT_VALUES))
+            ses.commit()
 
-    def test_guide_id_page_is_available(self):
-        self.assertEqual(
-            self.guide_id.status_code, 200,
-            "%@Проверьте, что адрес '/guides/<int:id>' доступен")
+        with solution.Session() as ses:
+            ses.execute(text(CREATE_TABLE))
+            ses.execute(text(INSERT_VALUES))
+            ses.commit()
 
-    def test_guides_page_returns_json(self):
+    def test_get_all_method_works_correct(self):
+        try:
+            guides = self.guide.get_all()
+        except Exception:
+            self.fail("Проверьте, что метод Guide.get_all работает корректно")
         self.assertTrue(
-            self.guides.is_json,
-            ("%@Проверьте что при запросе на страницу '/guides'"
-             " данные возвращаются в формате json, попробуйте "
-             " использовать функцию jsonify"))
-
-    def test_guide_id_page_returns_json(self):
+            isinstance(guides, list),
+            "Проверьте, что метод get_all возвращает список"
+        )
         self.assertTrue(
-            self.guides.is_json,
-            ("%@Проверьте что при запросе на страницу '/guides/<int:id>'"
-             " данные возвращаются в формате json, попробуйте "
-             "использовать функцию jsonify"))
-
-    def test_guides_page_result_is_dict(self):
-
+            len(guides) == len(self.author_guide.get_all()),
+            "Проверьте, что метод get_all возвращает все записи"
+        )
         self.assertTrue(
-            isinstance(self.guides.json, list),
-            ('%@Проверьте что при запросе на страницу "/guides" '
-             'возвращаемые данные являются словарем'))
+            isinstance(guides[0], self.guide),
+            "Проверьте, что метод get_all возвращает список, в котором содержатся экземпляры класса Guide"
+        )
 
-    def test_guide_id_page_result_is_dict(self):
+    def test_get_by_id_method_works_correct(self):
+        guide_id = 3
+        try:
+            guide = self.guide.get(guide_id)
+        except Exception:
+            self.fail("Проверьте что метод Guide.get работает корректно")
         self.assertTrue(
-            isinstance(self.guide_id.json, dict),
-            ('%@Проверьте что при запросе на страницу "/guides/<int:id>" '
-             'возвращаемые данные являются словарём'))
-
-    def test_guides_returns_correct_keys(self):
-        author_keys = self.author_guides.json[0].keys()
-        student_keys = self.guides.json[0].keys()
-        missing_keys = []
-        for key in author_keys:
-            if key not in student_keys:
-                missing_keys.append(key)
-        if len(missing_keys) > 0:
-            msg = ("%@Проверьте, присутствуют ли в возвращаемых объектах "
-                   f" следующие поля: {missing_keys} при обращении по "
-                   "адресу '/guides'")
-            raise self.failureException(msg)
-
-    def test_guide_id_returns_correct_keys(self):
-        author_keys = self.author_guide_id.json.keys()
-        student_keys = self.guide_id.json.keys()
-        missing_keys = []
-        for key in author_keys:
-            if key not in student_keys:
-                missing_keys.append(key)
-        if len(missing_keys) > 0:
-            msg = ("%@Проверьте, присутствуют ли в возвращаемом объекте "
-                   f" следующие поля: {missing_keys} при обращении по "
-                   "адресу '/guides/<int:id>'")
-            raise self.failureException(msg)
-
-    def test_guides_returns_correct_values(self):
-        student_dict = self.guides.json[0]
-        author_items = self.author_guides.json[0].items()
-        missing_values = []
-        for key, value in author_items:
-            if value != student_dict[key]:
-                missing_values.append(key)
-        if len(missing_values) > 0:
-            msg = ("%@Проверьте, правильные ли значения содержатся в "
-                   f" следующих полях: {missing_values} при обращении "
-                   " по адресу  '/guides'")
-            raise self.failureException(msg)
-
-    def test_guide_id_returns_correct_values(self):
-        student_dict = self.guide_id.json
-        author_items = self.author_guide_id.json.items()
-        missing_values = []
-        for key, value in author_items:
-            if value != student_dict[key]:
-                missing_values.append(key)
-        if len(missing_values) > 0:
-            msg = ("%@Проверьте, правильные ли значения содержатся в "
-                   f" следующих полях: {missing_values} при обращении "
-                   "по адресу '/guides/<int:id>'")
-            raise self.failureException(msg)
-
+            isinstance(guide, main.Guide),
+            "Проверьте, что метод get возвращает объект Guide"
+        )
+        self.assertTrue(
+            guide.id == guide_id,
+            "Проверьте, что метод get возвращает объект с правильным id"
+        )
 
 if __name__ == "__main__":
     unittest.main()
