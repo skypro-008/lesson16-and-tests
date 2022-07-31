@@ -44,7 +44,6 @@ with Session() as session:
 # Не удаляйте код ниже, он нужен, чтобы вывести результат запроса
 cursor = engine.execute(Query(User).statement).cursor
 mytable = prettytable.from_db_cursor(cursor)
-session.close()
 mytable.max_width = 30
 
 

@@ -27,9 +27,9 @@ class User(db):
             return session.query(cls).all()
 
     @classmethod
-    def get_one(cls, id):
+    def get_one(cls, user_id):
         with Session() as session:
-            return session.query(cls).get(id)
+            return session.query(cls).filter(cls.id == user_id).one()
 
 
 # не удаляйте код ниже, он используется для вывода на экран

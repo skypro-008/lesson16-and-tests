@@ -21,16 +21,16 @@ class User(db):
     city = Column(String)
 
     @classmethod
-    def delete(cls, id):
+    def delete(cls, user_id):
         with Session() as session:
-            user = session.query(cls).get(id)
+            user = session.query(cls).filter(cls.id == user_id).one()
             session.delete(user)
             session.commit()
 
     @classmethod
-    def update(cls, id, **kwargs):
+    def update(cls, user_id, **kwargs):
         with Session() as session:
-            user = session.query(cls).get(id)
+            user = session.query(cls).filter(cls.id == user_id).one()
             for key, value in kwargs.items():
                 setattr(user, key, value)
             session.commit()

@@ -31,5 +31,5 @@ class Guide(db):
     @classmethod
     def get(cls, guide_id):
         with Session() as ses:
-            guide = session.query(Guide).filter_by(id=guide_id).first()
+            guide = session.query(Guide).filter_by(id=guide_id).one()
         return guide

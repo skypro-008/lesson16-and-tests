@@ -41,6 +41,8 @@ with Session() as session:
 
 # Не удаляйте код ниже, он нужен, чтобы вывести результат запроса
 cursor = engine.execute(Query(City).statement).cursor
+# Здесь и далее используется библиотека 'prettytable', которая позволяет извлекать
+# данные из объекта cursor и выводить их в терминал в читаемом виде.
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 
