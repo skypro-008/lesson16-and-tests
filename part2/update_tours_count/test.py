@@ -16,22 +16,17 @@ from ttools.skyprotests.tests import SkyproTestCase  # noqa: E402
 from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 
 
-class ToursUpdaterTestCase(SkyproTestCase, DataBaseTestsMixin):
+class ToursCompanyNoneTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def test_function_retuns_correct_value(self):
-        guide_id = 3
-        with main.Session() as ses:
-            tours = ses.query(main.Guide).filter_by(id=guide_id).first().tours_count
-        try:
-            main.Guide.update_tours_counter(guide_id)
-        except Exception:
-            self.fail("Проверьте, что метод update_tours_count работает корректно")
-        with main.Session() as ses:
-            tours_after_update = ses.query(main.Guide).filter_by(id=guide_id).first().tours_count
-            self.assertTrue(
-                tours == tours_after_update - 1,
-                "Проверьте, что после применения метода, число туров у гида с переданным ID увеличивается на 1"
-            )
+        result = main.cursor.execute(
+            "SELECT tours_count FROM guide where `id`=1")
+        result = result.fetchall()
+        self.assertEqual(
+            result[0][0], 6,
+            "%@Проверьте, что у гида с id=1,"
+            " значение поля tours_count обновлено до 6 и "
+            "изменения зафиксированы с помощью функции commit")
 
 
 if __name__ == "__main__":

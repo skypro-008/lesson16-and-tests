@@ -1,33 +1,34 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 import prettytable
-from sqlalchemy import create_engine, Integer, Column, Text, ForeignKey
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db: SQLAlchemy = SQLAlchemy(app)
 
 
-class Author(db):
+class Author(db.Model):
     __tablename__ = "author"
-    id = Column(Integer, primary_key=True)
-    first_name = Column(Text(200))
-    last_name = Column(Text(200))
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.Text(200))
+    last_name = db.Column(db.Text(200))
 
 
-class Book(db):
+class Book(db.Model):
     __tablename__ = "book"
-    id = Column(Integer, primary_key=True)
-    title = Column(Text(200))
-    copyright = Column(Integer)
-    author_id = Column(Integer, ForeignKey('author.id'))
-    author = relationship("Author")
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text(200))
+    copyright = db.Column(db.Integer)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id'))
+    author = db.relationship("Author")
 
 # Не удаляйте код ниже, он нужен для корректного
 # отображения созданной вами модели
 
 
-db.metadata.create_all()
-session = Session()
+db.create_all()
+session = db.session()
 cursor_author = session.execute("SELECT * from author").cursor
 mytable = prettytable.from_db_cursor(cursor_author)
 cursor_book = session.execute("SELECT * from book").cursor

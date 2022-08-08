@@ -46,32 +46,31 @@ class SingerTestCase(SkyproTestCase, DataBaseTestsMixin):
             sqlalchemy.exc.IntegrityError,
             msg=("%@Проверьте, что полю 'age' нельзя присвоить"
                  " значение больше 34")):
-            with main.Session() as ses:
-                model = main.Singer(name='Виктор', age=35, group='qwe')
-                ses.add(model)
-                ses.commit()
+            model = main.Singer(name='Виктор', age=35, group='qwe')
+            main.db.session.add(model)
+            main.db.session.commit()
 
     def test_models_singer_has_correct_group_constraint(self):
         with self.assertRaises(
             sqlalchemy.exc.IntegrityError,
             msg=("%@Проверьте, что полю 'group' нельзя присвоить"
                  " Null значение (None)")):
-            with main.Session() as ses:
-                model = main.Singer(name='Виктор', age=34, group=None)
-                ses.add(model)
-                ses.commit()
+            model = main.Singer(name='Виктор', age=34, group=None)
+            main.db.session.add(model)
+            main.db.session.commit()
 
     def test_models_singer_has_correct_name_constraint(self):
         with self.assertRaises(
                 sqlalchemy.exc.IntegrityError,
                 msg=("%@Проверьте, что поле 'name' является уникальным")):
-            with main.Session() as ses:
-                model = main.Singer(name='Виктор', age=34, group='qwe')
-                model2 = main.Singer(name='Виктор', age=33, group='qwe1')
-                models = (model, model2)
-                ses.add_all(models)
-                ses.commit()
+            model = main.Singer(name='Виктор', age=34, group='qwe')
+            model2 = main.Singer(name='Виктор', age=33, group='qwe1')
+            models = (model, model2)
+            main.db.session.add_all(models)
+            main.db.session.commit()
 
+    def tearDown(self):
+        main.db.session.close()
 
 
 if __name__ == "__main__":

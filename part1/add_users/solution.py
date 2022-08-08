@@ -1,21 +1,23 @@
-from sqlalchemy import create_engine, Column, Integer, Text
-from sqlalchemy.orm import declarative_base, sessionmaker, Query
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+import prettytable
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db: SQLAlchemy = SQLAlchemy(app)
 
 
-class User(db):
+class User(db.Model):
     __tablename__ = "user"
-    id = Column(Integer, primary_key=True)
-    email = Column(Text(200))
-    password = Column(Text(200))
-    full_name = Column(Text(200))
-    city_ru = Column(Text(200))
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.Text(200))
+    password = db.Column(db.Text(200))
+    full_name = db.Column(db.Text(200))
+    city_ru = db.Column(db.Text(200))
 
 
-db.metadata.create_all()
+db.create_all()
 Ludmila = User(
     id=1,
     email="novlu@mail.com",
@@ -49,6 +51,13 @@ Ivan = User(
 
 users = (Ludmila, Andrew, George, Oksana, Ivan)
 
-with Session() as session:
-    session.add_all(users)
-    session.commit()
+with db.session.begin():
+    db.session.add_all(users)
+
+session = db.session()
+cursor = session.execute(f"SELECT * from {User.__tablename__}").cursor
+mytable = prettytable.from_db_cursor(cursor)
+mytable.max_width = 30
+
+if __name__ == '__main__':
+    print(mytable)

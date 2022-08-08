@@ -1,5 +1,5 @@
 # Таблица сообщений
-# Создайте модель Course по таблице courses:
+# Создайте модель Course по таблице course:
 # +----+-------------------+---------+-------+-------+
 # | id |       title       | subject | price | weeks |
 # +----+-------------------+---------+-------+-------+
@@ -11,22 +11,23 @@
 #
 #
 import prettytable
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker, Query
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
-
-
-# TODO опишите модель Course здесь
+# TODO определите модель здесь
 
 
 # Не удаляйте код ниже, он нужен для корректного отображения
 # созданной вами модели при запуске файла
-db.metadata.create_all()
-cursor = engine.execute(Query(Course).statement).cursor
+db.create_all()
+session = db.session()
+cursor = session.execute(f"SELECT * from {Course.__tablename__}").cursor
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 

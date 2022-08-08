@@ -1,30 +1,31 @@
 # Допишите модели гид(Guide) экскурсия (Excursion)
 # в соответствии с ulm (схема расположена в корне папки задания)
 #
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 import prettytable
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db: SQLAlchemy = SQLAlchemy(app)
 
 
-class Guide(db):
+class Guide(db.Model):
     __tablename__ = 'guide'
-    # TODO напишите поля модели здесь
+    # TODO добавьте поля модели здесь
 
 
-class Excursion(db):
+class Excursion(db.Model):
     __tablename__ = 'excursion'
-    # TODO напишите поля модели здесь
+    # TODO добавьте поля модели здесь
 
 # Не удаляйте код ниже, он нужен для корректного
 # отображения созданной вами модели
 
 
-db.metadata.create_all()
-session = Session()
+db.create_all()
+session = db.session()
 cursor_guide = session.execute("SELECT * from guide").cursor
 mytable = prettytable.from_db_cursor(cursor_guide)
 cursor_excursion = session.execute("SELECT * from excursion").cursor

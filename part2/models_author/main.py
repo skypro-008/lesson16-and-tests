@@ -2,21 +2,22 @@
 # в соответствии с uml (схема в файле tables.png в папке задания)
 #
 #
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 import prettytable
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db: SQLAlchemy = SQLAlchemy(app)
 
 
-class Author(db):
+class Author(db.Model):
     __tablename__ = "author"
     # TODO добавьте поля модели здесь
 
 
-class Book(db):
+class Book(db.Model):
     __tablename__ = "book"
     # TODO добавьте поля модели здесь
 
@@ -24,8 +25,8 @@ class Book(db):
 # отображения созданной вами модели
 
 
-db.metadata.create_all()
-session = Session()
+db.create_all()
+session = db.session()
 cursor_author = session.execute("SELECT * from author").cursor
 mytable = prettytable.from_db_cursor(cursor_author)
 cursor_book = session.execute("SELECT * from book").cursor

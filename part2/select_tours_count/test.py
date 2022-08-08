@@ -18,21 +18,21 @@ from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 class ToursCountTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def test_function_returns_list(self):
-        self.assertTrue(isinstance(main.Guide.get_experts(), list),
+        self.assertTrue(isinstance(main.do_request(), list),
                         "%@Проверьте что функция do_request"
                         " возвращает список значений")
 
-        self.assertTrue(len(main.Guide.get_experts()) != 0,
+        self.assertTrue(len(main.do_request()) != 0,
                         "%@Проверьте что список значений возвращаемых "
                         " функцией do_request не пустой")
 
         self.assertTrue(
-            isinstance(main.Guide.get_experts()[0], main.Guide),
+            isinstance(main.do_request()[0], main.Guide),
             "%@Проверьте что список значений возвращаемых "
             " функцией do_request содержит экземпляры модели Guide")
 
     def test_function_retuns_correct_value(self):
-        value_list = main.Guide.get_experts()
+        value_list = main.do_request()
         for instance in value_list:
             self.assertGreater(
                 instance.tours_count, 3,

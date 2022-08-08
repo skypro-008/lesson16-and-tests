@@ -3,9 +3,11 @@ import unittest
 import os
 from pathlib import Path
 
+import flask_sqlalchemy
+
 import main
 import solution
-from sqlalchemy.orm import DeclarativeMeta
+import sqlalchemy
 import inspect
 
 project_name = Path(os.path.abspath(__file__)).parent.parent.parent.name
@@ -36,9 +38,10 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def test_bookschema_inheritance_is_correct(self):
         self.assertTrue(
-            isinstance(main.Course, DeclarativeMeta),
+            issubclass(main.Course, flask_sqlalchemy.Model),
             ("%@Проверьте, правильно ли указан родительский класс у "
-             f"класса {MODEL_NAME}. Убедитесь, что правильно используете декларативный метод создания таблиц")
+             f"класса {MODEL_NAME}. Попробуйте использовать экземпляр "
+             "класса SQLAlchemy")
         )
 
     def test_model_columns_is_correct(self):
@@ -64,7 +67,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             type_name='Integer',
             fields=('id', 'price'))
 
-    def test_model_course_float_fields_has_correct_types(self):
+    def test_model_course_text_fields_has_correct_types(self):
         self.field_type_checker(
             module=main,
             model_name=MODEL_NAME,

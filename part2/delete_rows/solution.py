@@ -24,22 +24,16 @@ class Guide(db.Model):
     company = db.Column(db.Integer)
 
 
-def update_tours_count():
-    # solution
-    g = Guide.query.get(1)
-    g.tours_count = 6
-    db.session.add(g)
-    db.session.commit()
-    db.session.close()
-# не удаляйте код ниже, он необходим
-# для выдачи результата запроса
+def delete_guides():
+    Guide.query.filter(Guide.id.in_([1, 4, 7])).delete(False)
 
 
-update_tours_count()
+delete_guides()
 session = db.session()
-cursor = session.execute("SELECT * FROM guide WHERE `id`=1").cursor
+cursor = session.execute("SELECT * FROM guide").cursor
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 
 if __name__ == '__main__':
+    print('БАЗА ДАННЫХ:')
     print(mytable)

@@ -20,22 +20,22 @@ from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def setUp(self):
-        self.student_get_one = main.User.get_one
-        self.student_get_all = main.User.get_all
-        self.author_get_one = solution.User.get_one
-        self.author_get_all = solution.User.get_all
+        self.student_get_one = main.get_one
+        self.student_get_all = main.get_all
+        self.author_get_one = solution.get_one
+        self.author_get_all = solution.get_all
 
     def test_get_all_returns_list(self):
         self.assertTrue(
             isinstance(self.student_get_all(), list),
-            "%@Проверьте, что при вызове функции get_all возвращается список"
+            "%@Проверьте, что при вызове функции get_all возвращается лист"
         )
 
     def test_get_all_is_not_empty(self):
         self.assertFalse(
             self.student_get_all == [],
             "%@Проверьте, что при вызове функции get_all"
-            " возвращается не пустой список"
+            " возвращается не пустой лист"
         )
 
     def test_get_all_items_is_user_instance(self):
@@ -60,7 +60,7 @@ class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
             "%@Проверьте, что функция get_one "
             " возвращает экземпляр класса User")
 
-    def test_get_one_returns_correct_value(self):
+    def test_get_one_returns_сorrect_value(self):
         index = 4
         instance_student = self.student_get_one(
             index).__dict__

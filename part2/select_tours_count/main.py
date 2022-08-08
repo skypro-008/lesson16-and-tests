@@ -1,37 +1,36 @@
-# Напишите метод get_experts, который
+# Напишите функцию do_request, которая
 # вернет из таблицы 'guide' список гидов,
 # у которых число туров превышает 3 (tours_count > 3)
 #
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 import prettytable
-
-from sqlalchemy import create_engine, text, Column, Integer, String, Boolean
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import text
 from guides_sql import CREATE_TABLE, INSERT_VALUES
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+with db.session.begin():
+    db.session.execute(text(CREATE_TABLE))
+    db.session.execute(text(INSERT_VALUES))
 
-with Session() as session:
-    session.execute(text(CREATE_TABLE))
-    session.execute(text(INSERT_VALUES))
-    session.commit()
 
-
-class Guide(db):
+class Guide(db.Model):
     __tablename__ = 'guide'
-    id = Column(Integer, primary_key=True)
-    surname = Column(String)
-    full_name = Column(String)
-    tours_count = Column(Integer)
-    bio = Column(String)
-    is_pro = Column(Boolean)
-    company = Column(Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    surname = db.Column(db.String)
+    full_name = db.Column(db.String)
+    tours_count = db.Column(db.Integer)
+    bio = db.Column(db.String)
+    is_pro = db.Column(db.Boolean)
+    company = db.Column(db.Integer)
 
-    @classmethod
-    def get_experts(cls):
-        # TODO напишите Ваш код здесь
-        pass
+
+def do_request():
+    # TODO напишите запрос здесь
+    pass
 
 # не удаляйте код ниже, он необходим
 # для выдачи результата запроса
@@ -43,7 +42,7 @@ mytable.field_names = [
     'tours_count', 'bio', 'is_pro', 'company']
 
 rows = [[x.id, x.surname, x.full_name,
-         x.tours_count, x.bio, x.is_pro, x.company] for x in Guide.get_experts()]
+         x.tours_count, x.bio, x.is_pro, x.company] for x in do_request()]
 mytable.add_rows(rows)
 mytable.max_width = 25
 
