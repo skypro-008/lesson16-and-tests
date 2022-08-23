@@ -1,26 +1,27 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 import prettytable
-from sqlalchemy import create_engine, Integer, Column, String, CheckConstraint
-from sqlalchemy.orm import declarative_base, sessionmaker
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
-class Singer(db):
+class Singer(db.Model):
     __tablename__ = 'singer'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
-    age = Column(Integer, CheckConstraint("age < 35"))
-    group = Column(String, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    age = db.Column(db.Integer, db.CheckConstraint("age < 35"))
+    group = db.Column(db.String, nullable=False)
 
 
 # Не удаляйте код ниже, он нужен для корректного
 # отображения созданной вами модели
 
-db.metadata.drop_all()
-db.metadata.create_all()
-session = Session()
+db.drop_all()
+db.create_all()
+session = db.session()
 cursor = session.execute("SELECT * from singer").cursor
 mytable = prettytable.from_db_cursor(cursor)
 

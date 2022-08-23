@@ -23,8 +23,10 @@ TABLE_NAME = 'user'
 class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def setUp(self):
-        self.student_session = main.Session()
-        self.author_session = solution.Session()
+        student_db = main.db
+        author_db = solution.db
+        self.student_session = student_db.session()
+        self.author_session = author_db.session()
 
     def test_all_rows_added(self):
         query = f"SELECT * FROM {TABLE_NAME}"

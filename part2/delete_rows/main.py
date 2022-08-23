@@ -1,6 +1,5 @@
-# Напишите функцию do_request, которая
-# вернет из таблицы 'guide' список записей гидов,
-# у которых нет компании (company=None)
+# Напишите функцию delete_guides, которая
+# удаляет из базы гидов c id = 1,4,7
 #
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -28,25 +27,17 @@ class Guide(db.Model):
     company = db.Column(db.Integer)
 
 
-def do_request():
+def delete_guides():
     # TODO напишите запрос здесь
     pass
 
 
-# не удаляйте код ниже, он необходим
-# для выдачи результата запроса
+delete_guides()
+session = db.session()
+cursor = session.execute("SELECT * FROM guide").cursor
+mytable = prettytable.from_db_cursor(cursor)
+mytable.max_width = 30
 
-
-mytable = prettytable.PrettyTable()
-mytable.field_names = [
-    'id', 'surname', 'full_name',
-    'tours_count', 'bio', 'is_pro', 'company']
-
-rows = [[x.id, x.surname, x.full_name,
-         x.tours_count, x.bio, x.is_pro, x.company] for x in do_request()]
-mytable.add_rows(rows)
-mytable.max_width = 25
-
-if __name__ == "__main__":
-    print('Запрос возвращает следующие записи:')
+if __name__ == '__main__':
+    print('БАЗА ДАННЫХ:')
     print(mytable)

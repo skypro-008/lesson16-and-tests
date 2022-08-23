@@ -21,25 +21,25 @@ MODEL_NAME = 'City'
 class ToursCompanyNoneTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def test_function_returns_list(self):
-        self.assertTrue(isinstance(main.Guide.get_freelancers(), list),
-                        "%@Проверьте что метод get_freelancers"
+        self.assertTrue(isinstance(main.do_request(), list),
+                        "%@Проверьте что функция do_request"
                         " возвращает список значений")
 
-        self.assertTrue(len(main.Guide.get_freelancers()) != 0,
+        self.assertTrue(len(main.do_request()) != 0,
                         "%@Проверьте что список значений возвращаемых "
-                        " методом get_freelancers не пустой")
+                        " функцией do_request не пустой")
 
         self.assertTrue(
-            isinstance(main.Guide.get_freelancers()[0], main.Guide),
+            isinstance(main.do_request()[0], main.Guide),
             "%@Проверьте что список значений возвращаемых "
-            " методом get_freelancers содержит экземпляры модели Guide")
+            " функцией do_request содержит экземпляры модели Guide")
 
     def test_function_retuns_correct_value(self):
-        value_list = main.Guide.get_freelancers()
+        value_list = main.do_request()
         for instance in value_list:
             self.assertEqual(
                 instance.company, None,
-                "%@Проверьте, что в результате, возвращаемом методом"
+                "%@Проверьте, что в результате запроса содержатся"
                 " только те записи, в которых значение поля company=None")
 
 

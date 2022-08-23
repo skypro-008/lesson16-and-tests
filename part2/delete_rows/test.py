@@ -19,11 +19,10 @@ from ttools.skyprotests.tests_mixins import DataBaseTestsMixin  # noqa: E402
 class DeleteRowsTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def test_function_retuns_correct_value(self):
-        with main.Session() as ses:
-            result = ses.query(main.Guide).filter(main.Guide.id.in_([1, 4, 7])).all()
-            self.assertTrue(
-                len(result) == 0,
-                "%@Проверьте, что удалили из базы гидов с id=1,4,7,")
+        result = main.Guide.query.filter(main.Guide.id.in_([1, 4, 7])).all()
+        self.assertTrue(
+            len(result) == 0,
+            "%@Проверьте, что удалили из базы гидов с id=1,4,7,")
 
 
 if __name__ == "__main__":

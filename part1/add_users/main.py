@@ -17,32 +17,34 @@
 #
 #
 import prettytable
-from sqlalchemy import create_engine, Column, Integer, Text
-from sqlalchemy.orm import declarative_base, sessionmaker, Query
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
-
-
-class User(db):
+class User(db.Model):
     __tablename__ = "user"
-    id = Column(Integer, primary_key=True)
-    email = Column(Text(200))
-    password = Column(Text(200))
-    full_name = Column(Text(200))
-    city_ru = Column(Text(200))
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.Text(200))
+    password = db.Column(db.Text(200))
+    full_name = db.Column(db.Text(200))
+    city_ru = db.Column(db.Text(200))
 
 
-db.metadata.create_all()
+db.create_all()
 
-with Session() as session:
-    pass  # TODO напишите Ваш код здесь
+# TODO напишите здесь код с запросом на добавление
+# строк в таблицу
+#
+# Не удаляйте код ниже, он нужен для корректного отображения
+# созданной вами модели при запуске файла
 
-
-# Не удаляйте код ниже, он нужен, чтобы вывести результат запроса
-cursor = engine.execute(Query(User).statement).cursor
+session = db.session()
+cursor = session.execute(f"SELECT * from {User.__tablename__}").cursor
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 

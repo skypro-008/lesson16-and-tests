@@ -1,20 +1,27 @@
-from sqlalchemy import create_engine, Column, Integer, Text, Float
-from sqlalchemy.orm import declarative_base, sessionmaker, Query
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+import prettytable
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db: SQLAlchemy = SQLAlchemy(app)
 
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
+class Course(db.Model):
+    __tablename__ = 'course'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text(200))
+    subject = db.Column(db.Text(200))
+    price = db.Column(db.Integer)
+    weeks = db.Column(db.Float)
 
 
-class Course(db):
-    __tablename__ = 'courses'
-    id = Column(Integer, primary_key=True)
-    title = Column(Text(200))
-    subject = Column(Text(200))
-    price = Column(Integer)
-    weeks = Column(Float)
+db.create_all()
+session = db.session()
+cursor = session.execute(f"SELECT * from {Course.__tablename__}").cursor
+mytable = prettytable.from_db_cursor(cursor)
+mytable.max_width = 30
 
-
-db.metadata.create_all()
-cursor = engine.execute(Query(Course).statement).cursor
+if __name__ == '__main__':
+    print(mytable)

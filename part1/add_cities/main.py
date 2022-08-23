@@ -16,33 +16,33 @@
 #
 #
 import prettytable
-from sqlalchemy import create_engine, Column, String, Integer
-from sqlalchemy.orm import declarative_base, sessionmaker, Query
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
-engine = create_engine('sqlite:///:memory:')
-db = declarative_base(bind=engine)
-Session = sessionmaker(bind=engine)
-
-
-class City(db):
+class City(db.Model):
     __tablename__ = 'city'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    country_ru = Column(String)
-    population = Column(Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    country_ru = db.Column(db.String)
+    population = db.Column(db.Integer)
 
 
-db.metadata.create_all()
+db.create_all()
 
-with Session() as session:
-    pass  # TODO напишите Ваш запрос здесь
+# TODO напишите здесь код с запросом на добавление
+# строк в таблицу
+#
+# Не удаляйте код ниже, он нужен для корректного отображения
+# созданной вами модели при запуске файла
 
-
-# Не удаляйте код ниже, он нужен, чтобы вывести результат запроса
-cursor = engine.execute(Query(City).statement).cursor
-# Здесь и далее используется библиотека 'prettytable', которая позволяет извлекать
-# данные из объекта cursor и выводить их в терминал в читаемом виде.
+session = db.session()
+cursor = session.execute(f"SELECT * from {City.__tablename__}").cursor
 mytable = prettytable.from_db_cursor(cursor)
 mytable.max_width = 30
 

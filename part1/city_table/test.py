@@ -5,7 +5,7 @@ from pathlib import Path
 
 import main
 import solution
-
+import sqlalchemy
 
 project_name = Path(os.path.abspath(__file__)).parent.parent.parent.name
 cwd = Path.cwd()
