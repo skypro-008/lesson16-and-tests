@@ -22,10 +22,8 @@ TABLE_NAME = 'city'
 class CourseTestCase(SkyproTestCase, DataBaseTestsMixin):
 
     def setUp(self):
-        student_db = main.db
-        author_db = solution.db
-        self.student_session = student_db.session()
-        self.author_session = author_db.session()
+        self.student_session = main.Session()
+        self.author_session = solution.Session()
 
     def test_all_rows_added(self):
         student_rows_count = len(self.student_session.execute(
